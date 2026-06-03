@@ -115,6 +115,7 @@ export const settingsAPI = {
   update: (data) => api.put('/settings', data, { headers: { 'Content-Type': 'multipart/form-data' } }),
   updateHeroBanners: (formData) => api.put('/settings/hero-banners', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
   updateGallery: (images) => api.put('/settings/gallery', { galleryImages: images }),
+  updatePaymentMethods: (paymentMethods) => api.put('/settings/payment-methods', { paymentMethods }),
 };
 
 export const analyticsAPI = {

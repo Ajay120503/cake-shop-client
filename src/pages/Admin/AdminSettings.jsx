@@ -46,6 +46,8 @@ const AdminSettings = () => {
   const [bannerFiles, setBannerFiles] = useState({});
   const [bannerPreviews, setBannerPreviews] = useState({});
   const [savingBanners, setSavingBanners] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [savingPayments, setSavingPayments] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -79,6 +81,13 @@ const AdminSettings = () => {
             }))
           );
         }
+        if (s.paymentMethods && s.paymentMethods.length > 0) {
+          setPaymentMethods(
+            s.paymentMethods
+              .map((p) => ({ ...p }))
+              .sort((a, b) => a.order - b.order)
+          );
+        }
       } catch {
         // ignore
       } finally {
@@ -86,6 +95,45 @@ const AdminSettings = () => {
       }
     })();
   }, []);
+
+  const togglePaymentMethod = async (index) => {
+    // Compute the next state
+    const next = paymentMethods.map((p, i) =>
+      i === index ? { ...p, isActive: !p.isActive } : p
+    );
+    // Update UI immediately for snappy feedback
+    setPaymentMethods(next);
+    // Persist to the API right away
+    try {
+      const { data } = await settingsAPI.updatePaymentMethods(next);
+      setPaymentMethods(
+        (data.data.paymentMethods || []).map((p) => ({ ...p }))
+      );
+      const method = next[index];
+      toast.success(
+        `${method.label} ${method.isActive ? "enabled" : "disabled"}`
+      );
+    } catch (err) {
+      // Revert on failure
+      setPaymentMethods(paymentMethods);
+      toast.error("Failed to update payment method");
+    }
+  };
+
+  const savePaymentMethods = async () => {
+    setSavingPayments(true);
+    try {
+      const { data } = await settingsAPI.updatePaymentMethods(paymentMethods);
+      setPaymentMethods(
+        (data.data.paymentMethods || []).map((p) => ({ ...p }))
+      );
+      toast.success("Payment methods updated");
+    } catch (err) {
+      toast.error("Failed to update payment methods");
+    } finally {
+      setSavingPayments(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -487,6 +535,84 @@ const AdminSettings = () => {
           >
             <Save size={16} className="mr-2" />
             {savingBanners ? "Saving Banners..." : "Save Hero Banners"}
+          </button>
+        )}
+      </div>
+
+      {/* Payment Methods Section */}
+      <div className="card p-6 space-y-4 mt-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-semibold text-lg">Payment Methods</h2>
+            <p className="text-sm text-gray-500">
+              Enable or disable payment methods shown to customers at checkout.
+            </p>
+          </div>
+        </div>
+
+        {paymentMethods.length === 0 ? (
+          <p className="text-gray-400 text-center py-4">
+            No payment methods configured. Loading defaults...
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {paymentMethods.map((method, index) => (
+              <div
+                key={method.key}
+                className={
+                  "flex items-center justify-between p-4 rounded-lg border transition " +
+                  (method.isActive
+                    ? "bg-green-50 border-green-200"
+                    : "bg-gray-50 border-gray-200")
+                }
+              >
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium">{method.label}</p>
+                    {method.isActive ? (
+                      <span className="bg-green-100 text-green-700 text-[10px] font-medium px-2 py-0.5 rounded-full">
+                        ACTIVE
+                      </span>
+                    ) : (
+                      <span className="bg-gray-200 text-gray-600 text-[10px] font-medium px-2 py-0.5 rounded-full">
+                        DISABLED
+                      </span>
+                    )}
+                  </div>
+                  {method.description && (
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {method.description}
+                    </p>
+                  )}
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    Key:{" "}
+                    <code className="bg-gray-100 px-1 rounded">
+                      {method.key}
+                    </code>
+                  </p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer ml-4">
+                  <input
+                    type="checkbox"
+                    checked={method.isActive}
+                    onChange={() => togglePaymentMethod(index)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                </label>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {paymentMethods.length > 0 && (
+          <button
+            onClick={savePaymentMethods}
+            disabled={savingPayments}
+            className="btn-primary"
+          >
+            <Save size={16} className="mr-2" />
+            {savingPayments ? "Saving..." : "Save Payment Methods"}
           </button>
         )}
       </div>

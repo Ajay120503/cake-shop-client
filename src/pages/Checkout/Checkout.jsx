@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useCart } from "../../store/cartStore.js";
 import { useAuth } from "../../store/authStore.js";
+import { useSettings } from "../../store/settingsStore.js";
 import { orderAPI, addressAPI, paymentAPI } from "../../api/endpoints.js";
 import { formatPrice } from "../../utils/helpers.js";
 import toast from "react-hot-toast";
@@ -22,10 +23,48 @@ const Checkout = () => {
   const queryClient = useQueryClient();
   const { cart, clearCart: clearCartStore } = useCart();
   const { user } = useAuth();
+  const { settings } = useSettings();
   const [step, setStep] = useState(1);
   const [selectedAddress, setSelectedAddress] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState("COD");
+  const [paymentMethod, setPaymentMethod] = useState("razorpay");
   const [processing, setProcessing] = useState(false);
+
+  // Build list of active payment methods from settings, falling back to defaults
+  const activePaymentMethods = (
+    settings?.paymentMethods || [
+      {
+        key: "razorpay",
+        label: "Online Payment (Razorpay)",
+        description: "Pay securely via UPI, cards, or netbanking",
+      },
+      {
+        key: "cod",
+        label: "Cash on Delivery",
+        description: "Pay in cash when your order is delivered",
+      },
+    ]
+  ).filter((m) => m.isActive);
+
+  // Map icons to known payment methods
+  const iconForKey = (key) => {
+    if (key === "razorpay") return CreditCard;
+    if (key === "cod") return Wallet;
+    if (key === "upi") return Smartphone;
+    return Wallet;
+  };
+
+  // Sync paymentMethod state with first active method
+  useEffect(() => {
+    if (
+      activePaymentMethods.length > 0 &&
+      !activePaymentMethods.some((m) => m.key === paymentMethod)
+    ) {
+      setPaymentMethod(activePaymentMethods[0].key);
+    }
+    if (activePaymentMethods.length === 0) {
+      setPaymentMethod("");
+    }
+  }, [activePaymentMethods]);
 
   const { data: addresses = [] } = useQuery({
     queryKey: ["addresses"],
@@ -299,50 +338,45 @@ const Checkout = () => {
           {step === 2 && (
             <div className="card p-6">
               <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
-              <div className="space-y-3">
-                {[
-                  {
-                    id: "COD",
-                    label: "Cash on Delivery",
-                    desc: "Pay when you receive",
-                    icon: Wallet,
-                  },
-                  {
-                    id: "Razorpay",
-                    label: "Razorpay",
-                    desc: "Cards, UPI, NetBanking",
-                    icon: CreditCard,
-                  },
-                  {
-                    id: "UPI",
-                    label: "UPI / QR Payment",
-                    desc: "Pay via any UPI app",
-                    icon: Smartphone,
-                  },
-                ].map((m) => (
-                  <label
-                    key={m.id}
-                    className={
-                      "flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer " +
-                      (paymentMethod === m.id
-                        ? "border-primary-600 bg-primary-50"
-                        : "border-gray-200")
-                    }
-                  >
-                    <input
-                      type="radio"
-                      name="payment"
-                      checked={paymentMethod === m.id}
-                      onChange={() => setPaymentMethod(m.id)}
-                    />
-                    <m.icon size={20} className="text-primary-600" />
-                    <div>
-                      <p className="font-medium">{m.label}</p>
-                      <p className="text-sm text-gray-500">{m.desc}</p>
-                    </div>
-                  </label>
-                ))}
-              </div>
+              {activePaymentMethods.length === 0 ? (
+                <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-lg text-sm">
+                  No payment methods are currently available. Please contact the
+                  store.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {activePaymentMethods.map((m) => {
+                    const Icon = iconForKey(m.key);
+                    return (
+                      <label
+                        key={m.key}
+                        className={
+                          "flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer " +
+                          (paymentMethod === m.key
+                            ? "border-primary-600 bg-primary-50"
+                            : "border-gray-200")
+                        }
+                      >
+                        <input
+                          type="radio"
+                          name="payment"
+                          checked={paymentMethod === m.key}
+                          onChange={() => setPaymentMethod(m.key)}
+                        />
+                        <Icon size={20} className="text-primary-600" />
+                        <div>
+                          <p className="font-medium">{m.label}</p>
+                          {m.description && (
+                            <p className="text-sm text-gray-500">
+                              {m.description}
+                            </p>
+                          )}
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => setStep(1)}
