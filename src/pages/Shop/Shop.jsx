@@ -6,6 +6,7 @@ import { productAPI, categoryAPI } from "../../api/endpoints.js";
 import ProductGrid from "../../components/product/ProductGrid.jsx";
 import Loader from "../../components/ui/Loader.jsx";
 import { formatPrice } from "../../utils/helpers.js";
+import SEO from "../../components/common/SEO.jsx";
 
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -56,6 +57,10 @@ const Shop = () => {
 
   return (
     <div className="container-custom py-8">
+      <SEO
+        title="Shop"
+        description="Browse our collection of handcrafted cakes, pastries, and desserts."
+      />
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-3xl font-display font-bold">Shop</h1>

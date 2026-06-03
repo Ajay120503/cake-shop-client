@@ -2,6 +2,7 @@ import React, { lazy, Suspense, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { useAuth } from "./store/authStore.js";
 import { useSettings } from "./store/settingsStore.js";
+import SEO from "./components/common/SEO.jsx";
 
 // Layouts
 import MainLayout from "./layouts/MainLayout.jsx";
@@ -54,6 +55,7 @@ function App() {
 
   return (
     <Suspense fallback={<Loader fullScreen />}>
+      <SEO />
       <Routes>
         {/* Public routes with main layout */}
         <Route element={<MainLayout />}>

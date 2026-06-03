@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Mail, ArrowLeft } from "lucide-react";
 import { authAPI } from "../../api/endpoints.js";
 import { useSettings } from "../../store/settingsStore.js";
+import SEO from "../../components/common/SEO.jsx";
 import toast from "react-hot-toast";
 
 const ForgotPassword = () => {
@@ -27,6 +28,7 @@ const ForgotPassword = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-cream-100 to-secondary-50 py-12 px-4">
+      <SEO title="Forgot Password" />
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
           <Link to="/" className="inline-block">

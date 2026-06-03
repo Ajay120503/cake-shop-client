@@ -15,6 +15,7 @@ import ProductGrid from "../../components/product/ProductGrid.jsx";
 import Loader from "../../components/ui/Loader.jsx";
 import { productAPI, categoryAPI } from "../../api/endpoints.js";
 import { getPlaceholderImage } from "../../utils/helpers.js";
+import SEO from "../../components/common/SEO.jsx";
 
 const Home = () => {
   const { data: featuredData, isLoading: featuredLoading } = useQuery({
@@ -43,6 +44,10 @@ const Home = () => {
 
   return (
     <div className="pb-20">
+      <SEO
+        title="Home"
+        description="Browse our handcrafted premium cakes, pastries, and desserts. Same day delivery available."
+      />
       <Hero />
 
       <div className="container-custom pt-14">

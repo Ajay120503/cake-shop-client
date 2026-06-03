@@ -1,8 +1,10 @@
 import { Cake, Heart, Award, Users } from "lucide-react";
 import { motion } from "framer-motion";
+import SEO from "../../components/common/SEO.jsx";
 
 const About = () => (
   <div>
+    <SEO title="About Us" />
     <section className="bg-gradient-to-br from-primary-50 to-cream-100 py-20">
       <div className="container-custom text-center">
         <motion.h1

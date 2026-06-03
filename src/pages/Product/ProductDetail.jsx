@@ -14,6 +14,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { productAPI, reviewAPI } from "../../api/endpoints.js";
+import SEO from "../../components/common/SEO.jsx";
 import Loader from "../../components/ui/Loader.jsx";
 import Rating from "../../components/ui/Rating.jsx";
 import Badge from "../../components/ui/Badge.jsx";
@@ -133,6 +134,13 @@ const ProductDetail = () => {
 
   return (
     <div className="container-custom py-8">
+      <SEO
+        title={data.name}
+        description={
+          data.shortDescription || data.description?.slice(0, 200) || ""
+        }
+        image={data.images?.[0]?.url || ""}
+      />
       {/* Breadcrumbs */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6 flex-wrap">
         <Link to="/" className="hover:text-primary-600">
