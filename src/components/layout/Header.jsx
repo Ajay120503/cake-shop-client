@@ -550,8 +550,12 @@ const Header = () => {
                 onSubmit={handleSearch}
                 className="bg-white dark:bg-gray-800 rounded-t-2xl shadow-2xl overflow-hidden"
               >
-                <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100 dark:border-gray-700">
-                  <Search size={20} className="text-primary-500 shrink-0" />
+                <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 px-3 sm:px-5 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-700">
+                  <Search
+                    size={18}
+                    className="text-primary-500 shrink-0 hidden sm:block"
+                  />
+
                   <input
                     type="text"
                     name="search"
@@ -559,8 +563,9 @@ const Header = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search by name, category, keywords..."
-                    className="flex-1 text-base outline-none bg-transparent text-gray-800 dark:text-gray-100 placeholder-gray-400"
+                    className="flex-1 min-w-[120px] text-sm sm:text-base outline-none bg-transparent text-gray-800 dark:text-gray-100 placeholder-gray-400"
                   />
+
                   {searchQuery && (
                     <button
                       type="button"
@@ -568,14 +573,15 @@ const Header = () => {
                         setSearchQuery("");
                         setSearchResults([]);
                       }}
-                      className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400"
+                      className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 shrink-0"
                     >
-                      <X size={16} />
+                      <X size={14} />
                     </button>
                   )}
+
                   <button
                     type="submit"
-                    className="px-2 sm:px-4 py-1 sm:py-2 bg-primary-600 text-white rounded-lg text-[11px] sm:text-sm font-medium hover:bg-primary-700 transition whitespace-nowrap shrink-0"
+                    className="px-3 sm:px-4 py-1.5 sm:py-2 bg-primary-600 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-primary-700 transition whitespace-nowrap shrink-0"
                   >
                     Search
                   </button>
