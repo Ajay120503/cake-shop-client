@@ -76,39 +76,44 @@ const ProductCard = ({ product }) => {
             }}
           />
           {discount > 0 && (
-            <Badge variant="danger" className="absolute top-3 left-3">
+            <Badge variant="danger" className="absolute top-14 left-3">
               -{discount}%
             </Badge>
           )}
           {product.isNewArrival && (
-            <Badge variant="success" className="absolute top-3 right-3">
+            <Badge variant="success" className="absolute top-3 left-3">
               New
             </Badge>
           )}
-          <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
+          {/* Always-visible wishlist heart in top-right corner */}
+          <button
+            onClick={handleWishlist}
+            className={
+              "absolute top-3 right-3 z-10 p-2 rounded-full shadow-md transition-all duration-200 " +
+              (inWishlist
+                ? "bg-primary-600 text-white scale-110"
+                : "bg-white/80 text-gray-600 hover:bg-white hover:scale-110")
+            }
+          >
+            <Heart size={18} className={inWishlist ? "fill-current" : ""} />
+          </button>
+
+          {/* Hover overlay buttons */}
+          <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/30">
             <button
               onClick={handleAddToCart}
-              className="p-2.5 bg-white rounded-full shadow-lg hover:bg-primary-600 hover:text-white transition"
+              className="p-2.5 bg-white rounded-full shadow-lg hover:bg-primary-600 hover:text-white transition-transform hover:scale-110"
+              title="Add to Cart"
             >
               <ShoppingCart size={18} />
             </button>
             <Link
               to={"/product/" + (product.slug || product._id)}
-              className="p-2.5 bg-white rounded-full shadow-lg hover:bg-primary-600 hover:text-white transition"
+              className="p-2.5 bg-white rounded-full shadow-lg hover:bg-primary-600 hover:text-white transition-transform hover:scale-110"
+              title="View Details"
             >
               <Eye size={18} />
             </Link>
-            <button
-              onClick={handleWishlist}
-              className={
-                "p-2.5 bg-white rounded-full shadow-lg transition " +
-                (inWishlist
-                  ? "bg-primary-600 text-white"
-                  : "hover:bg-primary-600 hover:text-white")
-              }
-            >
-              <Heart size={18} className={inWishlist ? "fill-current" : ""} />
-            </button>
           </div>
         </div>
         <div className="p-4">
