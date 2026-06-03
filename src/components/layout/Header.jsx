@@ -575,9 +575,9 @@ const Header = () => {
                   )}
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition"
+                    className="px-2 sm:px-4 py-1 sm:py-2 bg-primary-600 text-white rounded-lg text-[11px] sm:text-sm font-medium hover:bg-primary-700 transition whitespace-nowrap shrink-0"
                   >
-                    Search
+                    Go
                   </button>
                 </div>
               </form>
