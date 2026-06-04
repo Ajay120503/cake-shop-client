@@ -115,7 +115,7 @@ const ReviewForm = ({
   }, []);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-5 sm:p-6">
+    <div className="bg-white">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold">
           {isEditMode ? "Edit Your Review" : "Write a Review"}

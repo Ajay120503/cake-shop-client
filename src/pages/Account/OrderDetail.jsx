@@ -30,7 +30,11 @@ const OrderDetail = () => {
   if (isLoading) return <Loader />;
   if (!data)
     return (
-      <div className="container-custom py-20 text-center">Order not found</div>
+      <div className="container-custom py-20 text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-12 shadow-soft border border-gray-100 dark:border-gray-700 max-w-md mx-auto">
+          <p className="text-gray-500 dark:text-gray-400">Order not found</p>
+        </div>
+      </div>
     );
 
   const handleCancel = async () => {
@@ -58,50 +62,62 @@ const OrderDetail = () => {
     }
   };
 
+  const getBadgeVariant = (status) => {
+    if (status === "Delivered") return "success";
+    if (status === "Cancelled" || status === "Refunded") return "danger";
+    return "warning";
+  };
+
   return (
     <div className="container-custom py-8">
+      {/* Back link */}
       <Link
         to="/account/orders"
-        className="inline-flex items-center text-sm text-gray-500 hover:text-primary-600 mb-4"
+        className="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 mb-4 transition-colors"
       >
         <ChevronLeft size={16} /> Back to orders
       </Link>
+
+      {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <h1 className="text-3xl font-display font-bold">
-          Order #{data.orderNumber}
-        </h1>
-        <Badge
-          variant={
-            data.orderStatus === "Delivered"
-              ? "success"
-              : data.orderStatus === "Cancelled"
-              ? "danger"
-              : "warning"
-          }
-        >
+        <div>
+          <h1 className="text-3xl font-display font-bold text-gray-900 dark:text-white">
+            Order #{data.orderNumber}
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            Placed on {formatDate(data.createdAt)}
+          </p>
+        </div>
+        <Badge variant={getBadgeVariant(data.orderStatus)}>
           {data.orderStatus.replace(/_/g, " ")}
         </Badge>
       </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
-          <div className="card p-6">
-            <h2 className="font-semibold mb-4 flex items-center gap-2">
-              <Package size={18} /> Items
+          {/* Items */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-soft border border-gray-100 dark:border-gray-700">
+            <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <Package size={18} className="text-primary-600" /> Items
             </h2>
             <div className="space-y-3">
               {data.items.map((item, i) => (
-                <div key={i} className="flex gap-3 pb-3 border-b last:border-0">
+                <div
+                  key={i}
+                  className="flex gap-3 pb-3 border-b border-gray-100 dark:border-gray-700 last:border-0 last:pb-0"
+                >
                   <img
                     src={item.image || getPlaceholderImage(item.name)}
                     alt={item.name}
-                    className="w-16 h-16 object-cover rounded-lg"
+                    className="w-16 h-16 rounded-xl object-cover shrink-0"
                   />
-                  <div className="flex-1">
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-sm text-gray-500">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-gray-900 dark:text-white">
+                      {item.name}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       Qty: {item.quantity} × {formatPrice(item.price)}
                     </p>
-                    {/* Review button for delivered items */}
                     {data.orderStatus === "Delivered" && item.product && (
                       <Link
                         to={
@@ -110,29 +126,39 @@ const OrderDetail = () => {
                             ? item.product.slug
                             : item.product)
                         }
-                        className="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 mt-1 font-medium"
+                        className="inline-flex items-center gap-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 mt-1 transition-colors"
                       >
-                        <Star size={12} />
-                        Write a Review
+                        <Star size={12} /> Write a Review
                       </Link>
                     )}
                   </div>
-                  <p className="font-bold text-primary-600">
+                  <p className="font-bold text-primary-600 dark:text-primary-400 shrink-0">
                     {formatPrice(item.price * item.quantity)}
                   </p>
                 </div>
               ))}
             </div>
           </div>
-          <div className="card p-6">
-            <h2 className="font-semibold mb-4">Status History</h2>
-            <div className="space-y-2">
+
+          {/* Status History */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-soft border border-gray-100 dark:border-gray-700">
+            <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white mb-4">
+              Status History
+            </h2>
+            <div className="space-y-3">
               {data.statusHistory?.map((s, i) => (
-                <div key={i} className="flex gap-3 text-sm">
-                  <div className="w-2 h-2 rounded-full bg-primary-600 mt-2" />
-                  <div>
-                    <p className="font-medium">{s.status}</p>
-                    <p className="text-xs text-gray-500">
+                <div key={i} className="flex gap-3">
+                  <div className="flex flex-col items-center">
+                    <div className="w-3 h-3 rounded-full bg-gradient-to-r from-primary-500 to-pink-500 shadow-sm" />
+                    {i < data.statusHistory.length - 1 && (
+                      <div className="w-0.5 flex-1 bg-gradient-to-b from-primary-200 to-pink-100 dark:from-primary-700 dark:to-pink-900/30 mt-1" />
+                    )}
+                  </div>
+                  <div className="pb-4">
+                    <p className="font-medium text-sm text-gray-900 dark:text-white">
+                      {s.status?.replace(/_/g, " ")}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       {formatDate(s.updatedAt)}
                     </p>
                   </div>
@@ -141,75 +167,106 @@ const OrderDetail = () => {
             </div>
           </div>
         </div>
+
         <div className="space-y-4">
-          <div className="card p-6">
-            <h2 className="font-semibold mb-4">Order Summary</h2>
+          {/* Order Summary */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-soft border border-gray-100 dark:border-gray-700">
+            <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white mb-4">
+              Order Summary
+            </h2>
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
+              <div className="flex justify-between text-gray-600 dark:text-gray-400">
                 <span>Subtotal</span>
-                <span>{formatPrice(data.itemsPrice)}</span>
+                <span className="font-medium text-gray-900 dark:text-white">
+                  {formatPrice(data.itemsPrice)}
+                </span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between text-gray-600 dark:text-gray-400">
                 <span>Tax</span>
-                <span>{formatPrice(data.taxPrice)}</span>
+                <span className="font-medium text-gray-900 dark:text-white">
+                  {formatPrice(data.taxPrice)}
+                </span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between text-gray-600 dark:text-gray-400">
                 <span>Shipping</span>
-                <span>{formatPrice(data.shippingPrice)}</span>
+                <span className="font-medium text-gray-900 dark:text-white">
+                  {formatPrice(data.shippingPrice)}
+                </span>
               </div>
               {data.discountPrice > 0 && (
-                <div className="flex justify-between text-green-600">
+                <div className="flex justify-between text-green-600 font-medium">
                   <span>Discount</span>
                   <span>-{formatPrice(data.discountPrice)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-lg font-bold pt-2 border-t">
-                <span>Total</span>
-                <span className="text-primary-600">
+              <div className="flex justify-between text-lg font-bold pt-3 border-t border-gray-100 dark:border-gray-700">
+                <span className="text-gray-900 dark:text-white">Total</span>
+                <span className="text-primary-600 dark:text-primary-400">
                   {formatPrice(data.totalPrice)}
                 </span>
               </div>
             </div>
           </div>
-          <div className="card p-6 text-sm">
-            <h2 className="font-semibold mb-3 flex items-center gap-2">
-              <MapPin size={18} /> Shipping Address
+
+          {/* Shipping Address */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-soft border border-gray-100 dark:border-gray-700">
+            <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+              <MapPin size={18} className="text-primary-600" /> Shipping Address
             </h2>
-            <p>{data.shippingAddress.fullName}</p>
-            <p className="text-gray-600">{data.shippingAddress.addressLine1}</p>
-            <p className="text-gray-600">
-              {data.shippingAddress.city}, {data.shippingAddress.state}{" "}
-              {data.shippingAddress.postalCode}
-            </p>
-            <p className="text-gray-600">📞 {data.shippingAddress.phone}</p>
+            <div className="text-sm text-gray-600 dark:text-gray-400 space-y-0.5">
+              <p className="font-medium text-gray-900 dark:text-white">
+                {data.shippingAddress.fullName}
+              </p>
+              <p>{data.shippingAddress.addressLine1}</p>
+              <p>
+                {data.shippingAddress.city}, {data.shippingAddress.state}{" "}
+                {data.shippingAddress.postalCode}
+              </p>
+              <p>📞 {data.shippingAddress.phone}</p>
+            </div>
           </div>
-          <div className="card p-6 text-sm">
-            <h2 className="font-semibold mb-3 flex items-center gap-2">
-              <CreditCard size={18} /> Payment
+
+          {/* Payment */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-soft border border-gray-100 dark:border-gray-700">
+            <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+              <CreditCard size={18} className="text-primary-600" /> Payment
             </h2>
-            <p>
-              Method: <span className="font-medium">{data.paymentMethod}</span>
-            </p>
-            <p>
-              Status:{" "}
-              <Badge
-                variant={data.paymentStatus === "Paid" ? "success" : "warning"}
-              >
-                {data.paymentStatus}
-              </Badge>
-            </p>
+            <div className="text-sm space-y-1.5">
+              <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                <span>Method</span>
+                <span className="font-medium text-gray-900 dark:text-white">
+                  {data.paymentMethod}
+                </span>
+              </div>
+              <div className="flex justify-between text-gray-600 dark:text-gray-400 items-center">
+                <span>Status</span>
+                <Badge
+                  variant={
+                    data.paymentStatus === "Paid" ? "success" : "warning"
+                  }
+                >
+                  {data.paymentStatus}
+                </Badge>
+              </div>
+            </div>
           </div>
-          <button onClick={handleInvoice} className="btn-outline w-full">
-            <Download size={16} className="mr-2" /> Download Invoice
+
+          {/* Actions */}
+          <button
+            onClick={handleInvoice}
+            className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200"
+          >
+            <Download size={16} /> Download Invoice
           </button>
+
           {!["Delivered", "Cancelled", "Refunded"].includes(
             data.orderStatus
           ) && (
             <button
               onClick={handleCancel}
-              className="btn-outline w-full text-red-600 border-red-200 hover:bg-red-50"
+              className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 border-2 border-red-400 text-red-500 hover:bg-red-500 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200"
             >
-              <X size={16} className="mr-2" /> Cancel Order
+              <X size={16} /> Cancel Order
             </button>
           )}
         </div>
