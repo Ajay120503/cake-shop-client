@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Edit, Trash2, Search } from "lucide-react";
 import { productAPI, categoryAPI } from "../../api/endpoints.js";
@@ -11,6 +11,8 @@ import toast from "react-hot-toast";
 const AdminProducts = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const searchTimerRef = useRef(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({
@@ -36,10 +38,23 @@ const AdminProducts = () => {
   const [files, setFiles] = useState([]);
   const [saving, setSaving] = useState(false);
 
+  // Debounce search input — only query after user stops typing for 300ms
+  useEffect(() => {
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+    return () => {
+      if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    };
+  }, [search]);
+
   const { data, isLoading } = useQuery({
-    queryKey: ["admin-products", search],
+    queryKey: ["admin-products", debouncedSearch],
     queryFn: () =>
-      productAPI.getAll({ search, limit: 100 }).then((r) => r.data),
+      productAPI
+        .getAll({ search: debouncedSearch, limit: 100 })
+        .then((r) => r.data),
   });
   const { data: categoriesData } = useQuery({
     queryKey: ["categories"],

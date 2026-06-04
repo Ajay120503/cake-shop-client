@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { userAPI } from "../../api/endpoints.js";
 import { formatDate } from "../../utils/helpers.js";
@@ -8,10 +8,27 @@ import toast from "react-hot-toast";
 const AdminCustomers = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const searchTimerRef = useRef(null);
+
+  // Debounce search input — only query after user stops typing for 300ms
+  useEffect(() => {
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 300);
+    return () => {
+      if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    };
+  }, [search]);
+
   const { data, isLoading } = useQuery({
-    queryKey: ["admin-users", page, search],
+    queryKey: ["admin-users", page, debouncedSearch],
     queryFn: () =>
-      userAPI.getAll({ page, search, limit: 20 }).then((r) => r.data),
+      userAPI
+        .getAll({ page, search: debouncedSearch, limit: 20 })
+        .then((r) => r.data),
   });
   const users = data?.data || [];
   const pagination = data?.pagination || {};
