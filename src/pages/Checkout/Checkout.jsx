@@ -26,30 +26,31 @@ const Checkout = () => {
   const { settings } = useSettings();
   const [step, setStep] = useState(1);
   const [selectedAddress, setSelectedAddress] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState("razorpay");
+  const [paymentMethod, setPaymentMethod] = useState("Razorpay");
   const [processing, setProcessing] = useState(false);
 
   // Build list of active payment methods from settings, falling back to defaults
   const activePaymentMethods = (
     settings?.paymentMethods || [
       {
-        key: "razorpay",
+        key: "Razorpay",
         label: "Online Payment (Razorpay)",
         description: "Pay securely via UPI, cards, or netbanking",
       },
       {
-        key: "cod",
+        key: "COD",
         label: "Cash on Delivery",
         description: "Pay in cash when your order is delivered",
       },
     ]
   ).filter((m) => m.isActive);
 
-  // Map icons to known payment methods
+  // Map icons to known payment methods (case-insensitive)
   const iconForKey = (key) => {
-    if (key === "razorpay") return CreditCard;
-    if (key === "cod") return Wallet;
-    if (key === "upi") return Smartphone;
+    const k = (key || "").toLowerCase();
+    if (k === "razorpay") return CreditCard;
+    if (k === "cod") return Wallet;
+    if (k === "upi") return Smartphone;
     return Wallet;
   };
 
