@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Edit, Trash2, Search } from "lucide-react";
-import { productAPI, uploadAPI, categoryAPI } from "../../api/endpoints.js";
+import { productAPI, categoryAPI } from "../../api/endpoints.js";
 import { formatPrice, getPlaceholderImage } from "../../utils/helpers.js";
 import Loader from "../../components/ui/Loader.jsx";
 import Modal from "../../components/ui/Modal.jsx";
+import Badge from "../../components/ui/Badge.jsx";
 import toast from "react-hot-toast";
 
 const AdminProducts = () => {
@@ -131,7 +132,9 @@ const AdminProducts = () => {
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <h1 className="text-3xl font-display font-bold">Products</h1>
+        <h1 className="text-3xl font-display font-bold text-gray-900 dark:text-white">
+          Products
+        </h1>
         <div className="flex gap-2">
           <div className="relative flex-1 sm:w-64">
             <Search
@@ -142,80 +145,123 @@ const AdminProducts = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search..."
-              className="input pl-10"
+              className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all"
             />
           </div>
           <button
             onClick={() => openModal(null)}
-            className="btn-primary text-sm py-2"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold shadow-soft hover:shadow-elegant transition-all duration-200"
           >
-            <Plus size={16} className="mr-1" /> Add Product
+            <Plus size={16} /> Add Product
           </button>
         </div>
       </div>
-      <div className="card overflow-hidden">
+
+      {/* Table */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-left text-xs uppercase">
-              <tr>
-                <th className="p-3">Product</th>
-                <th className="p-3">Category</th>
-                <th className="p-3">Price</th>
-                <th className="p-3">Stock</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Actions</th>
+            <thead>
+              <tr className="bg-gradient-to-r from-primary-50 to-pink-50 dark:from-primary-900/20 dark:to-pink-900/20 border-b border-gray-100 dark:border-gray-700">
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Product
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Category
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Price
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Stock
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
               {products.map((p) => (
-                <tr key={p._id} className="border-t hover:bg-gray-50">
-                  <td className="p-3 flex items-center gap-2">
-                    <img
-                      src={p.images?.[0]?.url || getPlaceholderImage(p.name)}
-                      alt=""
-                      className="w-10 h-10 rounded object-cover"
-                    />
-                    <span className="font-medium">{p.name}</span>
-                  </td>
-                  <td className="p-3">{p.category?.name || "-"}</td>
+                <tr
+                  key={p._id}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                >
                   <td className="p-3">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={p.images?.[0]?.url || getPlaceholderImage(p.name)}
+                        alt=""
+                        className="w-10 h-10 rounded-xl object-cover shrink-0"
+                      />
+                      <span className="font-semibold text-gray-900 dark:text-white truncate max-w-[200px]">
+                        {p.name}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="p-3 text-gray-600 dark:text-gray-400">
+                    {p.category?.name || "-"}
+                  </td>
+                  <td className="p-3 font-semibold text-gray-900 dark:text-white">
                     {formatPrice(p.discountPrice || p.price)}
-                  </td>
-                  <td className="p-3">
-                    <span className={p.stock < 10 ? "text-red-600" : ""}>
-                      {p.stock}
-                    </span>
                   </td>
                   <td className="p-3">
                     <span
                       className={
-                        "badge " +
-                        (p.isAvailable ? "badge-success" : "badge-danger")
+                        "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium " +
+                        (p.stock < 5
+                          ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                          : p.stock < 20
+                          ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                          : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400")
                       }
                     >
-                      {p.isAvailable ? "Active" : "Inactive"}
+                      {p.stock}
                     </span>
                   </td>
-                  <td className="p-3 flex gap-1">
-                    <button
-                      onClick={() => openModal(p)}
-                      className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
-                    >
-                      <Edit size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(p._id)}
-                      className="p-1.5 text-red-600 hover:bg-red-50 rounded"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                  <td className="p-3">
+                    <Badge variant={p.isAvailable ? "success" : "danger"}>
+                      {p.isAvailable ? "Active" : "Inactive"}
+                    </Badge>
+                  </td>
+                  <td className="p-3">
+                    <div className="flex gap-1.5">
+                      <button
+                        onClick={() => openModal(p)}
+                        className="p-2 rounded-lg text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                        title="Edit"
+                      >
+                        <Edit size={15} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(p._id)}
+                        className="p-2 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                        title="Delete"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
+              {products.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="p-12 text-center text-gray-500 dark:text-gray-400"
+                  >
+                    No products found
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* Modal */}
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -240,7 +286,7 @@ const AdminProducts = () => {
             required
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
-          ></textarea>
+          />
           <div className="grid grid-cols-2 gap-2">
             <input
               className="input"
@@ -352,11 +398,15 @@ const AdminProducts = () => {
               "isEggless",
               "isTrending",
             ].map((k) => (
-              <label key={k} className="flex items-center gap-2 text-sm">
+              <label
+                key={k}
+                className="flex items-center gap-2 text-sm cursor-pointer"
+              >
                 <input
                   type="checkbox"
                   checked={form[k]}
                   onChange={(e) => setForm({ ...form, [k]: e.target.checked })}
+                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                 />
                 {k
                   .replace("is", "")
@@ -375,18 +425,18 @@ const AdminProducts = () => {
               className="input"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 pt-2">
             <button
               type="submit"
               disabled={saving}
-              className="btn-primary text-sm"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold shadow-soft hover:shadow-elegant transition-all duration-200"
             >
               {saving ? "Saving..." : "Save"}
             </button>
             <button
               type="button"
               onClick={() => setModalOpen(false)}
-              className="btn-outline text-sm"
+              className="inline-flex items-center gap-2 px-5 py-2.5 border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200"
             >
               Cancel
             </button>

@@ -50,60 +50,89 @@ const AdminOrders = () => {
   const orders = data?.data || [];
   const pagination = data?.pagination || {};
 
+  const getStatusBadgeVariant = (status) => {
+    if (status === "Delivered") return "success";
+    if (status === "Cancelled" || status === "Refunded") return "danger";
+    return "warning";
+  };
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <h1 className="text-3xl font-display font-bold">Orders</h1>
+        <h1 className="text-3xl font-display font-bold text-gray-900 dark:text-white">
+          Orders
+        </h1>
         <select
           value={filter}
           onChange={(e) => {
             setFilter(e.target.value);
             setPage(1);
           }}
-          className="input py-2 w-auto"
+          className="w-full sm:w-auto px-4 py-2.5 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-gray-100 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all"
         >
           <option value="">All Statuses</option>
           {STATUSES.map((s) => (
             <option key={s} value={s}>
-              {s}
+              {s.replace(/_/g, " ")}
             </option>
           ))}
         </select>
       </div>
-      <div className="card overflow-hidden">
+
+      {/* Table */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-left text-xs uppercase">
-              <tr>
-                <th className="p-3">Order</th>
-                <th className="p-3">Customer</th>
-                <th className="p-3">Items</th>
-                <th className="p-3">Total</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Payment</th>
-                <th className="p-3">Date</th>
-                <th className="p-3">Action</th>
+            <thead>
+              <tr className="bg-gradient-to-r from-primary-50 to-pink-50 dark:from-primary-900/20 dark:to-pink-900/20 border-b border-gray-100 dark:border-gray-700">
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Order
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Customer
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Items
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Total
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Payment
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Action
+                </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
               {orders.map((o) => (
-                <tr key={o._id} className="border-t hover:bg-gray-50">
-                  <td className="p-3 font-mono text-xs">#{o.orderNumber}</td>
+                <tr
+                  key={o._id}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                >
                   <td className="p-3">
+                    <span className="font-mono text-xs font-bold text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-lg">
+                      #{o.orderNumber}
+                    </span>
+                  </td>
+                  <td className="p-3 font-medium text-gray-900 dark:text-white">
                     {o.user?.name || o.shippingAddress?.fullName}
                   </td>
-                  <td className="p-3">{o.items.length}</td>
-                  <td className="p-3 font-bold">{formatPrice(o.totalPrice)}</td>
+                  <td className="p-3 text-gray-600 dark:text-gray-400">
+                    {o.items.length}
+                  </td>
+                  <td className="p-3 font-bold text-gray-900 dark:text-white">
+                    {formatPrice(o.totalPrice)}
+                  </td>
                   <td className="p-3">
-                    <Badge
-                      variant={
-                        o.orderStatus === "Delivered"
-                          ? "success"
-                          : o.orderStatus === "Cancelled"
-                          ? "danger"
-                          : "warning"
-                      }
-                    >
+                    <Badge variant={getStatusBadgeVariant(o.orderStatus)}>
                       {o.orderStatus.replace(/_/g, " ")}
                     </Badge>
                   </td>
@@ -116,24 +145,38 @@ const AdminOrders = () => {
                       {o.paymentStatus}
                     </Badge>
                   </td>
-                  <td className="p-3 text-xs">{formatDate(o.createdAt)}</td>
+                  <td className="p-3 text-xs text-gray-500 dark:text-gray-400">
+                    {formatDate(o.createdAt)}
+                  </td>
                   <td className="p-3">
                     <button
                       onClick={() => {
                         setModalOrder(o);
                         setNewStatus(o.orderStatus);
                       }}
-                      className="text-primary-600 hover:underline"
+                      className="px-3 py-1.5 text-xs font-semibold bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/50 rounded-lg transition-colors"
                     >
                       Update
                     </button>
                   </td>
                 </tr>
               ))}
+              {orders.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={8}
+                    className="p-12 text-center text-gray-500 dark:text-gray-400"
+                  >
+                    No orders found
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* Pagination */}
       {pagination.pages > 1 && (
         <div className="flex justify-center gap-2 mt-6">
           {Array.from({ length: pagination.pages }, (_, i) => (
@@ -141,8 +184,10 @@ const AdminOrders = () => {
               key={i}
               onClick={() => setPage(i + 1)}
               className={
-                "w-10 h-10 rounded-full " +
-                (page === i + 1 ? "bg-primary-600 text-white" : "bg-gray-100")
+                "w-10 h-10 rounded-xl text-sm font-semibold transition-all duration-150 " +
+                (page === i + 1
+                  ? "bg-gradient-to-r from-primary-600 to-pink-600 text-white shadow-elegant"
+                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-primary-50 dark:hover:bg-gray-700")
               }
             >
               {i + 1}
@@ -150,25 +195,56 @@ const AdminOrders = () => {
           ))}
         </div>
       )}
+
+      {/* Modal */}
       <Modal
         isOpen={!!modalOrder}
         onClose={() => setModalOrder(null)}
         title={"Order #" + (modalOrder?.orderNumber || "")}
+        size="lg"
       >
         {modalOrder && (
           <div className="space-y-4">
-            <div className="space-y-1 text-sm">
-              <p>
-                <strong>Customer:</strong>{" "}
-                {modalOrder.user?.name || modalOrder.shippingAddress?.fullName}
-              </p>
-              <p>
-                <strong>Total:</strong> {formatPrice(modalOrder.totalPrice)}
-              </p>
-              <p>
-                <strong>Current Status:</strong> {modalOrder.orderStatus}
-              </p>
+            <div className="grid grid-cols-2 gap-4 p-4 rounded-xl bg-gradient-to-br from-primary-50 to-pink-50 dark:from-primary-900/20 dark:to-pink-900/20">
+              <div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">
+                  Customer
+                </p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                  {modalOrder.user?.name ||
+                    modalOrder.shippingAddress?.fullName}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">
+                  Total
+                </p>
+                <p className="text-sm font-bold text-primary-600 dark:text-primary-400">
+                  {formatPrice(modalOrder.totalPrice)}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">
+                  Current Status
+                </p>
+                <Badge variant={getStatusBadgeVariant(modalOrder.orderStatus)}>
+                  {modalOrder.orderStatus.replace(/_/g, " ")}
+                </Badge>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">
+                  Payment
+                </p>
+                <Badge
+                  variant={
+                    modalOrder.paymentStatus === "Paid" ? "success" : "warning"
+                  }
+                >
+                  {modalOrder.paymentStatus}
+                </Badge>
+              </div>
             </div>
+
             <div>
               <label className="label">New Status</label>
               <select
@@ -178,7 +254,7 @@ const AdminOrders = () => {
               >
                 {STATUSES.map((s) => (
                   <option key={s} value={s}>
-                    {s}
+                    {s.replace(/_/g, " ")}
                   </option>
                 ))}
               </select>
@@ -190,15 +266,18 @@ const AdminOrders = () => {
                 rows={2}
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-              ></textarea>
+              />
             </div>
-            <div className="flex gap-2">
-              <button onClick={handleStatus} className="btn-primary text-sm">
+            <div className="flex gap-2 pt-1">
+              <button
+                onClick={handleStatus}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold shadow-soft hover:shadow-elegant transition-all duration-200"
+              >
                 Update Status
               </button>
               <button
                 onClick={() => setModalOrder(null)}
-                className="btn-outline text-sm"
+                className="inline-flex items-center gap-2 px-5 py-2.5 border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200"
               >
                 Cancel
               </button>

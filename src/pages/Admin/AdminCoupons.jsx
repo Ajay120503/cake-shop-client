@@ -107,74 +107,119 @@ const AdminCoupons = () => {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-display font-bold">Coupons</h1>
+        <h1 className="text-3xl font-display font-bold text-gray-900 dark:text-white">
+          Coupons
+        </h1>
         <button
           onClick={() => openModal(null)}
-          className="btn-primary text-sm py-2"
+          className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold shadow-soft hover:shadow-elegant transition-all duration-200"
         >
-          <Plus size={16} className="mr-1" /> Add Coupon
+          <Plus size={16} /> Add Coupon
         </button>
       </div>
-      <div className="card overflow-hidden">
+
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-left text-xs uppercase">
-              <tr>
-                <th className="p-3">Code</th>
-                <th className="p-3">Name</th>
-                <th className="p-3">Discount</th>
-                <th className="p-3">Min Order</th>
-                <th className="p-3">Used/Limit</th>
-                <th className="p-3">Valid Until</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Actions</th>
+            <thead>
+              <tr className="bg-gradient-to-r from-primary-50 to-pink-50 dark:from-primary-900/20 dark:to-pink-900/20 border-b border-gray-100 dark:border-gray-700">
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Code
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Discount
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Min Order
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Used/Limit
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Valid Until
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
               {coupons.map((c) => (
-                <tr key={c._id} className="border-t hover:bg-gray-50">
-                  <td className="p-3 font-mono font-bold">{c.code}</td>
-                  <td className="p-3">{c.name}</td>
-                  <td className="p-3">
+                <tr
+                  key={c._id}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                >
+                  <td className="p-3 font-mono font-bold text-primary-600 dark:text-primary-400">
+                    {c.code}
+                  </td>
+                  <td className="p-3 font-medium text-gray-900 dark:text-white">
+                    {c.name}
+                  </td>
+                  <td className="p-3 text-gray-900 dark:text-white">
                     {c.discountType === "percentage"
                       ? c.discountValue + "%"
                       : "₹" + c.discountValue}
                   </td>
-                  <td className="p-3">₹{c.minOrderAmount}</td>
-                  <td className="p-3">
+                  <td className="p-3 text-gray-600 dark:text-gray-400">
+                    ₹{c.minOrderAmount}
+                  </td>
+                  <td className="p-3 text-gray-600 dark:text-gray-400">
                     {c.usedCount}/{c.usageLimit || "∞"}
                   </td>
-                  <td className="p-3 text-xs">{formatDate(c.validUntil)}</td>
+                  <td className="p-3 text-xs text-gray-500 dark:text-gray-400">
+                    {formatDate(c.validUntil)}
+                  </td>
                   <td className="p-3">
                     <span
                       className={
-                        "badge " +
-                        (c.isActive ? "badge-success" : "badge-danger")
+                        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium " +
+                        (c.isActive
+                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                          : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400")
                       }
                     >
                       {c.isActive ? "Active" : "Inactive"}
                     </span>
                   </td>
-                  <td className="p-3 flex gap-1">
-                    <button
-                      onClick={() => openModal(c)}
-                      className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
-                    >
-                      <Edit size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(c._id)}
-                      className="p-1.5 text-red-600 hover:bg-red-50 rounded"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                  <td className="p-3">
+                    <div className="flex gap-1.5">
+                      <button
+                        onClick={() => openModal(c)}
+                        className="p-2 rounded-lg text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                      >
+                        <Edit size={15} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(c._id)}
+                        className="p-2 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
+              {coupons.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={8}
+                    className="p-12 text-center text-gray-500 dark:text-gray-400"
+                  >
+                    No coupons found
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
+
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -206,7 +251,7 @@ const AdminCoupons = () => {
             placeholder="Description"
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
-          ></textarea>
+          />
           <div className="grid grid-cols-3 gap-2">
             <select
               className="input"
@@ -273,18 +318,18 @@ const AdminCoupons = () => {
             value={form.validUntil}
             onChange={(e) => setForm({ ...form, validUntil: e.target.value })}
           />
-          <div className="flex gap-2">
+          <div className="flex gap-2 pt-1">
             <button
               type="submit"
               disabled={saving}
-              className="btn-primary text-sm"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold shadow-soft hover:shadow-elegant transition-all duration-200"
             >
               {saving ? "Saving..." : "Save"}
             </button>
             <button
               type="button"
               onClick={() => setModalOpen(false)}
-              className="btn-outline text-sm"
+              className="inline-flex items-center gap-2 px-5 py-2.5 border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200"
             >
               Cancel
             </button>
