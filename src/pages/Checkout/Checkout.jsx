@@ -8,11 +8,20 @@ import {
   Smartphone,
   MapPin,
   ChevronRight,
+  Tag,
+  X,
+  Copy,
+  Check,
 } from "lucide-react";
 import { useCart } from "../../store/cartStore.js";
 import { useAuth } from "../../store/authStore.js";
 import { useSettings } from "../../store/settingsStore.js";
-import { orderAPI, addressAPI, paymentAPI } from "../../api/endpoints.js";
+import {
+  orderAPI,
+  addressAPI,
+  paymentAPI,
+  couponAPI,
+} from "../../api/endpoints.js";
 import { formatPrice } from "../../utils/helpers.js";
 import toast from "react-hot-toast";
 
@@ -21,7 +30,12 @@ console.log("RAZORPAY KEY:", import.meta.env.VITE_RAZORPAY_KEY_ID);
 const Checkout = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { cart, clearCart: clearCartStore } = useCart();
+  const {
+    cart,
+    clearCart: clearCartStore,
+    applyCoupon: applyCartCoupon,
+    removeCoupon: removeCartCoupon,
+  } = useCart();
   const { user } = useAuth();
   const { settings } = useSettings();
   const [step, setStep] = useState(1);
@@ -71,6 +85,37 @@ const Checkout = () => {
     queryKey: ["addresses"],
     queryFn: () => addressAPI.getAll().then((r) => r.data.data || []),
   });
+
+  // Fetch active coupons
+  const { data: availableCoupons = [] } = useQuery({
+    queryKey: ["public-coupons"],
+    queryFn: () => couponAPI.getPublic().then((r) => r.data.data || []),
+  });
+  const [applyingCoupon, setApplyingCoupon] = useState(null);
+
+  const handleApplyCoupon = async (code) => {
+    setApplyingCoupon(code);
+    try {
+      await applyCartCoupon(code);
+      toast.success(`Coupon "${code}" applied!`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to apply coupon");
+    } finally {
+      setApplyingCoupon(null);
+    }
+  };
+
+  const handleRemoveCoupon = async () => {
+    setApplyingCoupon("__remove__");
+    try {
+      await removeCartCoupon();
+      toast.success("Coupon removed");
+    } catch (err) {
+      toast.error("Failed to remove coupon");
+    } finally {
+      setApplyingCoupon(null);
+    }
+  };
 
   const [newAddress, setNewAddress] = useState({
     fullName: user?.name || "",
@@ -445,6 +490,72 @@ const Checkout = () => {
 
         <div className="card p-6 h-fit sticky top-24">
           <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+
+          {/* Current Coupon */}
+          {cart.coupon ? (
+            <div className="flex items-center justify-between bg-green-50 dark:bg-green-900/20 p-3 rounded-lg mb-3 text-sm">
+              <div className="flex items-center gap-2">
+                <Tag size={14} className="text-green-600" />
+                <span className="font-medium text-green-700 dark:text-green-300">
+                  {cart.coupon.code}
+                </span>
+              </div>
+              <button
+                onClick={handleRemoveCoupon}
+                disabled={applyingCoupon === "__remove__"}
+                className="text-xs text-red-500 hover:underline"
+              >
+                {applyingCoupon === "__remove__" ? "..." : "Remove"}
+              </button>
+            </div>
+          ) : (
+            availableCoupons.length > 0 && (
+              <div className="mb-3">
+                <p className="text-xs font-medium text-gray-500 mb-2 flex items-center gap-1">
+                  <Tag size={12} />
+                  Available Coupons
+                </p>
+                <div className="space-y-2">
+                  {availableCoupons.slice(0, 3).map((c) => (
+                    <div
+                      key={c._id}
+                      className="flex items-center justify-between border border-dashed border-primary-200 rounded-lg p-2"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-bold text-primary-600 uppercase">
+                          {c.code}
+                        </p>
+                        {c.description && (
+                          <p className="text-[10px] text-gray-500 truncate">
+                            {c.description}
+                          </p>
+                        )}
+                        <p className="text-[10px] text-gray-400">
+                          {c.discountType === "percentage"
+                            ? `${c.discountValue}% off`
+                            : `₹${c.discountValue} off`}
+                          {c.minOrderValue > 0 && ` · Min: ₹${c.minOrderValue}`}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleApplyCoupon(c.code)}
+                        disabled={applyingCoupon === c.code}
+                        className="text-[10px] px-2 py-1 bg-primary-600 text-white rounded-full hover:bg-primary-700 shrink-0 ml-2"
+                      >
+                        {applyingCoupon === c.code ? "..." : "Apply"}
+                      </button>
+                    </div>
+                  ))}
+                  {availableCoupons.length > 3 && (
+                    <p className="text-[10px] text-gray-400 text-center">
+                      +{availableCoupons.length - 3} more coupons
+                    </p>
+                  )}
+                </div>
+              </div>
+            )
+          )}
+
           <div className="space-y-2 text-sm border-b pb-3 mb-3">
             <div className="flex justify-between">
               <span>Subtotal</span>
