@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { Star, X, Upload, AlertCircle } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Star, X, Upload, AlertCircle, Loader } from "lucide-react";
 import { reviewAPI } from "../../api/endpoints";
 import Button from "../ui/Button";
-import Loader from "../ui/Loader";
+// import Loader from "../ui/Loader";
 
 const ReviewForm = ({
   productId,
