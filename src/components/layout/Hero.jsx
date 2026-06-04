@@ -14,7 +14,6 @@ import {
   Award,
   Clock,
   Heart,
-  Sparkles,
 } from "lucide-react";
 import { useSettings } from "../../store/settingsStore.js";
 import { getPlaceholderImage } from "../../utils/helpers.js";
@@ -64,7 +63,6 @@ const Hero = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <Sparkles size={12} />
               Premium Bakery Since 2010
             </motion.span>
             <h1 className="text-6xl md:text-7xl lg:text-8xl font-display font-bold gradient-text mb-4">
@@ -130,7 +128,6 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
               >
-                <Sparkles size={12} />
                 Featured Collection
               </motion.span>
 

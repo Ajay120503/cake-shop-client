@@ -1,12 +1,5 @@
 import { useEffect } from "react";
-import {
-  Cake,
-  Heart,
-  Award,
-  Users,
-  Sparkles,
-  CheckCircle2,
-} from "lucide-react";
+import { Cake, Heart, Award, Users, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import SEO from "../../components/common/SEO.jsx";
 import { useSettings } from "../../store/settingsStore.js";
@@ -102,7 +95,6 @@ const About = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.15 }}
             >
-              <Sparkles size={12} />
               About {siteName}
             </motion.span>
 
@@ -240,7 +232,6 @@ const About = () => {
             className="text-center mb-12"
           >
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 text-xs font-semibold mb-3">
-              <Sparkles size={12} />
               What Drives Us
             </span>
             <h2 className="text-4xl sm:text-5xl font-display font-bold text-gray-900 dark:text-white">

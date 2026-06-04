@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, Sparkles, Search } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const faqs = [
@@ -77,7 +77,6 @@ const FAQ = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.15 }}
             >
-              <Sparkles size={12} />
               Help Center
             </motion.span>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold gradient-text mb-3">
@@ -169,7 +168,6 @@ const FAQ = () => {
           viewport={{ once: true }}
           className="mt-12 text-center p-8 bg-gradient-to-br from-primary-50 to-pink-50 dark:from-primary-900/20 dark:to-pink-900/20 rounded-3xl border border-primary-100 dark:border-primary-800"
         >
-          <Sparkles size={24} className="mx-auto text-primary-500 mb-3" />
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
             Still have questions?
           </h3>

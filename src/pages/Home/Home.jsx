@@ -1,15 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import {
-  Cake,
-  ArrowRight,
-  Sparkles,
-  Heart,
-  Shield,
-  Truck,
-  Award,
-} from "lucide-react";
+import { Cake, ArrowRight, Heart, Shield, Truck, Award } from "lucide-react";
 import Hero from "../../components/layout/Hero.jsx";
 import ProductGrid from "../../components/product/ProductGrid.jsx";
 import Loader from "../../components/ui/Loader.jsx";
@@ -60,7 +52,7 @@ const Home = () => {
             className="text-center mb-10"
           >
             <p className="text-primary-600 font-medium mb-2 flex items-center justify-center gap-2">
-              <Sparkles size={16} /> Shop by Category
+              Shop by Category
             </p>
             <h2 className="text-3xl sm:text-4xl font-display font-bold">
               Browse Our Collections

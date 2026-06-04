@@ -9,7 +9,6 @@ import {
   Phone,
   MapPin,
   Send,
-  Sparkles,
 } from "lucide-react";
 import { useSettings } from "../../store/settingsStore.js";
 import { contactAPI } from "../../api/endpoints.js";
@@ -196,8 +195,7 @@ const Footer = () => {
 
             {/* Newsletter */}
             <form onSubmit={handleSubscribe}>
-              <label className="text-xs font-semibold text-gray-300 block mb-2 flex items-center gap-1.5">
-                <Sparkles size={12} className="text-primary-400" />
+              <label className="text-xs font-semibold text-gray-300 block mb-2">
                 Newsletter
               </label>
               <div className="flex rounded-xl overflow-hidden border border-gray-700 focus-within:border-primary-500 transition-colors">

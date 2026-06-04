@@ -15,7 +15,6 @@ import {
   Lock,
   LayoutDashboard,
   ChevronDown,
-  Sparkles,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../store/authStore.js";
@@ -127,30 +126,32 @@ const Header = () => {
     <>
       <header className="sticky top-0 z-40">
         {/* Premium Announcement Bar */}
-        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-1 px-2 text-center">
-          <div className="flex items-center gap-1">
-            <Sparkles size={14} className="shrink-0" />
+        <div className="relative overflow-hidden bg-gradient-to-r from-primary-700 via-primary-600 to-pink-600 text-white text-xs sm:text-sm py-2.5 text-center font-medium tracking-wide">
+          <motion.div
+            className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_60%)]"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          />
+
+          <div className="relative z-10 flex items-center justify-center gap-1 whitespace-wrap px-2 overflow-hidden">
             <span>
               Free delivery on orders above ₹
               {settings?.freeShippingThreshold ?? 500}
+              {activeCoupon && (
+                <>
+                  <span className="mx-1">•</span>
+                  Use code{" "}
+                  <span className="bg-white/20 rounded px-1.5 py-0.5 font-bold tracking-widest text-xs">
+                    {activeCoupon.code}
+                  </span>{" "}
+                  for{" "}
+                  {activeCoupon.discountType === "percentage"
+                    ? `${activeCoupon.discountValue}% off`
+                    : `₹${activeCoupon.discountValue} off`}
+                </>
+              )}
             </span>
           </div>
-
-          {activeCoupon && (
-            <div className="flex items-center gap-1 flex-wrap justify-center">
-              <span className="hidden sm:inline">•</span>
-              <span>Use code</span>
-              <span className="bg-white/20 rounded px-1.5 py-0.5 font-bold tracking-widest text-xs">
-                {activeCoupon.code}
-              </span>
-              <span>
-                for{" "}
-                {activeCoupon.discountType === "percentage"
-                  ? `${activeCoupon.discountValue}% off`
-                  : `₹${activeCoupon.discountValue} off`}
-              </span>
-            </div>
-          )}
         </div>
 
         {/* Main Nav */}

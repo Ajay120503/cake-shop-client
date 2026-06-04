@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Phone, MapPin, Send, Sparkles, Clock } from "lucide-react";
+import { Mail, Phone, MapPin, Send, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { contactAPI } from "../../api/endpoints.js";
 import { useSettings } from "../../store/settingsStore.js";
@@ -77,7 +77,6 @@ const Contact = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.15 }}
             >
-              <Sparkles size={12} />
               Get in Touch
             </motion.span>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold gradient-text mb-3">
