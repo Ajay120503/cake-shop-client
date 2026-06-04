@@ -14,6 +14,7 @@ import {
   Award,
   Clock,
   Heart,
+  Sparkles,
 } from "lucide-react";
 import { useSettings } from "../../store/settingsStore.js";
 import { getPlaceholderImage } from "../../utils/helpers.js";
@@ -45,16 +46,36 @@ const Hero = () => {
 
   if (banners.length === 0) {
     return (
-      <section className="relative h-[80vh] flex items-center bg-gradient-to-br from-pink-50 via-cream-100 to-yellow-50">
-        <div className="container-custom text-center">
-          <motion.h1
+      <section className="relative h-[85vh] flex items-center bg-gradient-to-br from-pink-50 via-cream-50 to-yellow-50 overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-40 h-40 rounded-full bg-primary-300 blur-3xl" />
+          <div className="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-pink-300 blur-3xl" />
+        </div>
+        <div className="container-custom text-center relative z-10">
+          <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-6xl md:text-7xl font-bold gradient-text"
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            Handcrafted Cakes
-          </motion.h1>
+            <motion.span
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-100 text-primary-700 text-xs font-semibold mb-4"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Sparkles size={12} />
+              Premium Bakery Since 2010
+            </motion.span>
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-display font-bold gradient-text mb-4">
+              Handcrafted
+              <br />
+              <span className="text-gray-900 dark:text-white">Cakes</span>
+            </h1>
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
+              Every slice tells a story of passion, quality, and love.
+            </p>
+          </motion.div>
         </div>
       </section>
     );
@@ -62,8 +83,8 @@ const Hero = () => {
 
   return (
     <>
-      {/* ── Slider ── */}
-      <section className="relative h-[85vh] overflow-hidden bg-black">
+      {/* ── Premium Slider ── */}
+      <section className="relative h-[85vh] sm:h-[90vh] overflow-hidden bg-black">
         {/* Background Slider */}
         <AnimatePresence mode="wait">
           {banners.map(
@@ -72,19 +93,21 @@ const Hero = () => {
                 <motion.div
                   key={idx}
                   className="absolute inset-0 overflow-hidden"
-                  style={{ x, y, rotateX, rotateY, scale: 1 }} // ← no extra zoom
-                  initial={{ opacity: 0 }} // ← removed scale animation
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 1 }}
+                  style={{ x, y, rotateX, rotateY }}
+                  initial={{ opacity: 0, scale: 1.05 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.05 }}
+                  transition={{ duration: 1.2, ease: "easeInOut" }}
                 >
                   <img
                     src={banner.image?.url || getPlaceholderImage(banner.title)}
                     alt={banner.title}
-                    className="w-full h-full object-cover object-[center_30%]" // ← focus at 30% from top
+                    className="w-full h-full object-cover object-[center_30%]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.08),transparent_50%)]" />
+                  {/* Premium gradient overlays */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.1),transparent_50%)]" />
                 </motion.div>
               )
           )}
@@ -94,17 +117,28 @@ const Hero = () => {
         <div className="absolute inset-0 flex items-center">
           <div className="container-custom text-white">
             <motion.div
-              key={current}
-              initial={{ opacity: 0, y: 30 }}
+              key={current + "-content"}
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
               className="max-w-2xl"
             >
+              {/* Category badge */}
+              <motion.span
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm text-white/90 text-xs font-semibold mb-4 border border-white/10"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                <Sparkles size={12} />
+                Featured Collection
+              </motion.span>
+
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="text-5xl md:text-7xl font-bold leading-tight"
+                transition={{ delay: 0.15 }}
+                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-bold leading-tight"
               >
                 {banners[current]?.title}
               </motion.h1>
@@ -113,8 +147,8 @@ const Hero = () => {
                 <motion.p
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-xl text-white/80 mt-4"
+                  transition={{ delay: 0.25 }}
+                  className="text-lg sm:text-xl text-white/80 mt-4 max-w-lg"
                 >
                   {banners[current]?.subtitle}
                 </motion.p>
@@ -124,8 +158,8 @@ const Hero = () => {
                 <motion.p
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="text-white/60 mt-4"
+                  transition={{ delay: 0.35 }}
+                  className="text-sm sm:text-base text-white/50 mt-3 max-w-md leading-relaxed"
                 >
                   {banners[current]?.description}
                 </motion.p>
@@ -135,15 +169,18 @@ const Hero = () => {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="mt-6"
+                  transition={{ delay: 0.45 }}
+                  className="mt-8"
                 >
                   <Link
                     to={banners[current]?.ctaLink || "/shop"}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black rounded-full font-medium hover:scale-105 transition"
+                    className="inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-white to-cream-100 text-gray-900 rounded-full font-semibold hover:scale-105 hover:shadow-glow transition-all duration-300 group"
                   >
-                    {banners[current]?.ctaText}
-                    <ArrowRight size={16} />
+                    <span>{banners[current]?.ctaText}</span>
+                    <ArrowRight
+                      size={16}
+                      className="transition-transform group-hover:translate-x-1"
+                    />
                   </Link>
                 </motion.div>
               )}
@@ -151,33 +188,35 @@ const Hero = () => {
           </div>
         </div>
 
-        {/* Controls */}
+        {/* Premium Controls */}
         {banners.length > 1 && (
           <>
             <button
               onClick={() =>
                 setCurrent((c) => (c - 1 + banners.length) % banners.length)
               }
-              className="absolute left-6 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 transition flex items-center justify-center"
+              className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/25 transition-all border border-white/10 text-white flex items-center justify-center"
             >
-              <ChevronLeft />
+              <ChevronLeft size={20} />
             </button>
 
             <button
               onClick={() => setCurrent((c) => (c + 1) % banners.length)}
-              className="absolute right-6 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 transition flex items-center justify-center"
+              className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/25 transition-all border border-white/10 text-white flex items-center justify-center"
             >
-              <ChevronRight />
+              <ChevronRight size={20} />
             </button>
 
-            {/* Dots — raised above feature strip overlap zone */}
-            <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+            {/* Premium Dots */}
+            <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex gap-2.5 z-10">
               {banners.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrent(i)}
-                  className={`transition-all rounded-full ${
-                    i === current ? "w-8 h-2 bg-white" : "w-2 h-2 bg-white/40"
+                  className={`transition-all duration-300 rounded-full ${
+                    i === current
+                      ? "w-10 h-2.5 bg-gradient-to-r from-primary-400 to-pink-400 shadow-glow"
+                      : "w-2.5 h-2.5 bg-white/30 hover:bg-white/60"
                   }`}
                 />
               ))}
@@ -186,28 +225,38 @@ const Hero = () => {
         )}
       </section>
 
-      {/* ── Feature Strip — half overlapping hero bottom ── */}
-      <div className="relative z-20 -mt-10 px-4">
+      {/* ── Premium Feature Strip ── */}
+      <div className="relative z-20 -mt-12 px-4">
         <div className="container-custom">
-          <div className="grid grid-cols-2 md:grid-cols-4 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl px-6 py-5">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="grid grid-cols-2 md:grid-cols-4 bg-white dark:bg-gray-900 rounded-2xl shadow-elegant px-4 sm:px-6 py-5 border border-gray-100 dark:border-gray-800"
+          >
             {features.map((f, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="flex items-center gap-3 py-2"
+                viewport={{ once: true }}
+                className="flex items-center gap-3 py-3 px-2 border-r last:border-r-0 border-gray-100 dark:border-gray-800"
               >
-                <div className="w-12 h-12 shrink-0 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center">
+                <div className="w-12 h-12 shrink-0 rounded-xl bg-gradient-to-br from-primary-50 to-pink-50 dark:from-primary-900/30 dark:to-pink-900/20 text-primary-600 dark:text-primary-400 flex items-center justify-center">
                   <f.icon size={20} />
                 </div>
                 <div>
-                  <p className="font-semibold text-sm">{f.title}</p>
-                  <p className="text-xs text-gray-500">{f.desc}</p>
+                  <p className="font-semibold text-sm text-gray-900 dark:text-white">
+                    {f.title}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {f.desc}
+                  </p>
                 </div>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
     </>

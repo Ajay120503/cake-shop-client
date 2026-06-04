@@ -1,4 +1,3 @@
-// Fixed Header.jsx
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import {
@@ -16,6 +15,7 @@ import {
   Lock,
   LayoutDashboard,
   ChevronDown,
+  Sparkles,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../store/authStore.js";
@@ -126,34 +126,40 @@ const Header = () => {
   return (
     <>
       <header className="sticky top-0 z-40">
-        {/* Announcement Bar – unchanged */}
-        <div className="bg-gradient-to-r from-primary-700 via-primary-600 to-pink-600 text-white text-xs sm:text-sm py-2 text-center font-medium tracking-wide">
-          <span>
-            Free delivery on orders above ₹
-            {settings?.freeShippingThreshold ?? 500}
-            {activeCoupon && (
-              <>
-                &nbsp;·&nbsp; Use code{" "}
-                <span className="bg-white/20 rounded px-1.5 py-0.5 font-bold tracking-widest text-xs">
-                  {activeCoupon.code}
-                </span>{" "}
+        {/* Premium Announcement Bar */}
+        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-1 px-2 text-center">
+          <div className="flex items-center gap-1">
+            <Sparkles size={14} className="shrink-0" />
+            <span>
+              Free delivery on orders above ₹
+              {settings?.freeShippingThreshold ?? 500}
+            </span>
+          </div>
+
+          {activeCoupon && (
+            <div className="flex items-center gap-1 flex-wrap justify-center">
+              <span className="hidden sm:inline">•</span>
+              <span>Use code</span>
+              <span className="bg-white/20 rounded px-1.5 py-0.5 font-bold tracking-widest text-xs">
+                {activeCoupon.code}
+              </span>
+              <span>
                 for{" "}
                 {activeCoupon.discountType === "percentage"
                   ? `${activeCoupon.discountValue}% off`
                   : `₹${activeCoupon.discountValue} off`}
-              </>
-            )}
-          </span>
+              </span>
+            </div>
+          )}
         </div>
 
-        {/* Main Nav – unchanged except for fixed search */}
-        <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 shadow-sm">
+        {/* Main Nav */}
+        <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 shadow-soft">
           <div className="container-custom">
             <div className="flex items-center justify-between h-16 sm:h-20">
-              {/* Logo – unchanged */}
+              {/* Logo */}
               <Link to="/" className="flex items-center gap-3 group">
                 <div className="relative">
-                  {/* Logo image – handles both object.url and direct string */}
                   {(() => {
                     const logoSrc =
                       settings?.logo?.url ||
@@ -167,7 +173,6 @@ const Header = () => {
                           alt={settings?.siteName || "Cake Shop"}
                           className="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-110 duration-300"
                           onError={(e) => {
-                            // If image fails to load, fallback to emoji
                             e.target.style.display = "none";
                             e.target.nextSibling?.classList?.remove("hidden");
                           }}
@@ -180,9 +185,12 @@ const Header = () => {
                       </span>
                     );
                   })()}
-                  {/* Hidden fallback emoji in case img fails */}
                   <span className="hidden text-3xl sm:text-4xl">🎂</span>
-                  <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-primary-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <motion.span
+                    className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-primary-500 rounded-full"
+                    animate={{ scale: [1, 1.3, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
                 </div>
                 <div className="hidden sm:block">
                   <h1 className="text-xl sm:text-2xl font-display font-bold gradient-text leading-tight">
@@ -194,15 +202,15 @@ const Header = () => {
                 </div>
               </Link>
 
-              {/* Desktop Nav – unchanged */}
-              <nav className="hidden lg:flex items-center gap-0.5">
+              {/* Desktop Nav */}
+              <nav className="hidden lg:flex items-center gap-1">
                 {links.map((link) => (
                   <NavLink
                     key={link.to}
                     to={link.to}
                     end={link.to === "/"}
                     className={({ isActive }) =>
-                      "relative px-3.5 py-2 rounded-lg text-sm font-medium transition-colors " +
+                      "relative px-4 py-2 rounded-xl text-sm font-medium transition-colors " +
                       (isActive
                         ? "text-primary-600 dark:text-primary-400"
                         : "text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400")
@@ -214,8 +222,12 @@ const Header = () => {
                         {isActive && (
                           <motion.span
                             layoutId="nav-pill"
-                            className="absolute inset-0 bg-primary-50 dark:bg-primary-900/30 rounded-lg -z-10"
-                            transition={{ type: "spring", duration: 0.4 }}
+                            className="absolute inset-0 bg-primary-50 dark:bg-primary-900/30 rounded-xl -z-10"
+                            transition={{
+                              type: "spring",
+                              duration: 0.4,
+                              bounce: 0.25,
+                            }}
                           />
                         )}
                       </>
@@ -224,7 +236,7 @@ const Header = () => {
                 ))}
               </nav>
 
-              {/* Right Actions – unchanged except for search overlay (fixed below) */}
+              {/* Right Actions */}
               <div className="flex items-center gap-1">
                 {/* Search button */}
                 <button
@@ -232,16 +244,16 @@ const Header = () => {
                     setSearchOpen(true);
                     setSearchQuery("");
                   }}
-                  className="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary-600 transition-colors"
+                  className="p-2.5 rounded-full text-gray-600 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-gray-800 hover:text-primary-600 transition-colors"
                   aria-label="Search"
                 >
-                  <Search size={20} />
+                  <Search size={19} />
                 </button>
 
-                {/* Theme toggle – unchanged */}
-                {/* <button
+                {/* Theme toggle */}
+                <button
                   onClick={toggleTheme}
-                  className="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary-600 transition-colors hidden sm:flex"
+                  className="p-2.5 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary-600 transition-colors hidden sm:flex"
                   aria-label="Toggle theme"
                 >
                   <AnimatePresence mode="wait">
@@ -253,28 +265,28 @@ const Header = () => {
                       transition={{ duration: 0.2 }}
                     >
                       {theme === "light" ? (
-                        <Moon size={20} />
+                        <Moon size={19} />
                       ) : (
-                        <Sun size={20} />
+                        <Sun size={19} />
                       )}
                     </motion.span>
                   </AnimatePresence>
-                </button> */}
+                </button>
 
-                {/* Wishlist – unchanged */}
+                {/* Wishlist */}
                 <Link
                   to="/account/wishlist"
-                  className="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary-600 transition-colors relative hidden sm:flex"
+                  className="p-2.5 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary-600 transition-colors relative hidden sm:flex"
                   aria-label="Wishlist"
                 >
-                  <Heart size={20} />
+                  <Heart size={19} />
                   <AnimatePresence>
                     {wishlistCount > 0 && (
                       <motion.span
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         exit={{ scale: 0 }}
-                        className="absolute -top-1 -right-1 bg-pink-500 text-white text-[10px] font-bold rounded-full w-4.5 h-4.5 min-w-[18px] min-h-[18px] flex items-center justify-center leading-none px-0.5"
+                        className="absolute -top-0.5 -right-0.5 bg-pink-500 text-white text-[10px] font-bold rounded-full min-w-[18px] min-h-[18px] flex items-center justify-center leading-none px-0.5 shadow-sm"
                       >
                         {wishlistCount}
                       </motion.span>
@@ -282,20 +294,20 @@ const Header = () => {
                   </AnimatePresence>
                 </Link>
 
-                {/* Cart – unchanged */}
+                {/* Cart */}
                 <Link
                   to="/cart"
-                  className="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary-600 transition-colors relative"
+                  className="p-2.5 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary-600 transition-colors relative"
                   aria-label="Cart"
                 >
-                  <ShoppingCart size={20} />
+                  <ShoppingCart size={19} />
                   <AnimatePresence>
                     {cartCount > 0 && (
                       <motion.span
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         exit={{ scale: 0 }}
-                        className="absolute -top-1 -right-1 bg-primary-600 text-white text-[10px] font-bold rounded-full min-w-[18px] min-h-[18px] flex items-center justify-center leading-none px-0.5"
+                        className="absolute -top-0.5 -right-0.5 bg-primary-600 text-white text-[10px] font-bold rounded-full min-w-[18px] min-h-[18px] flex items-center justify-center leading-none px-0.5 shadow-sm"
                       >
                         {cartCount}
                       </motion.span>
@@ -303,14 +315,14 @@ const Header = () => {
                   </AnimatePresence>
                 </Link>
 
-                {/* User menu – unchanged */}
+                {/* User menu */}
                 {isAuthenticated ? (
                   <div className="relative ml-1">
                     <button
                       onClick={() => setUserMenu(!userMenu)}
                       className="flex items-center gap-1.5 pl-1 pr-2 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                     >
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-pink-500 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-pink-500 text-white flex items-center justify-center font-bold text-sm shadow-elegant">
                         {user?.name?.[0]?.toUpperCase() || "U"}
                       </div>
                       <ChevronDown
@@ -332,16 +344,15 @@ const Header = () => {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: -8, scale: 0.96 }}
                             transition={{ duration: 0.15 }}
-                            className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden z-50"
+                            className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800 rounded-2xl shadow-elegant border border-gray-100 dark:border-gray-700 overflow-hidden z-50"
                           >
-                            {/* User Info */}
                             <div className="px-4 py-3 bg-gradient-to-r from-primary-50 to-pink-50 dark:from-primary-900/30 dark:to-pink-900/20 border-b border-gray-100 dark:border-gray-700">
                               <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-pink-500 text-white flex items-center justify-center font-bold">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-pink-500 text-white flex items-center justify-center font-bold shadow-elegant">
                                   {user?.name?.[0]?.toUpperCase() || "U"}
                                 </div>
                                 <div className="min-w-0">
-                                  <p className="text-sm font-semibold truncate">
+                                  <p className="text-sm font-semibold truncate text-gray-900 dark:text-white">
                                     {user?.name}
                                   </p>
                                   <p className="text-xs text-gray-500 truncate">
@@ -392,7 +403,7 @@ const Header = () => {
                                   key={to}
                                   to={to}
                                   onClick={() => setUserMenu(false)}
-                                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors rounded-lg mx-1"
                                 >
                                   <Icon size={16} className="text-gray-400" />
                                   {label}
@@ -423,14 +434,14 @@ const Header = () => {
                     </Link>
                     <Link
                       to="/register"
-                      className="px-4 py-2 text-sm font-medium bg-primary-600 hover:bg-primary-700 text-white rounded-full transition-colors"
+                      className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-full shadow-elegant hover:shadow-glow transition-all duration-200"
                     >
                       Sign Up
                     </Link>
                   </div>
                 )}
 
-                {/* Hamburger – unchanged */}
+                {/* Hamburger */}
                 <button
                   onClick={() => setMobileOpen(!mobileOpen)}
                   className="lg:hidden p-2 ml-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -451,7 +462,7 @@ const Header = () => {
               </div>
             </div>
 
-            {/* Mobile Nav – unchanged */}
+            {/* Mobile Nav */}
             <AnimatePresence>
               {mobileOpen && (
                 <motion.nav
@@ -479,7 +490,7 @@ const Header = () => {
                       </motion.div>
                     ))}
                     <div className="flex items-center gap-2 px-4 pt-2 pb-1 border-t border-gray-100 dark:border-gray-800 mt-2">
-                      {/* <button
+                      <button
                         onClick={toggleTheme}
                         className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
                       >
@@ -488,7 +499,7 @@ const Header = () => {
                         ) : (
                           <Sun size={18} />
                         )}
-                      </button> */}
+                      </button>
                       <Link
                         to="/account/wishlist"
                         onClick={() => setMobileOpen(false)}
@@ -514,7 +525,7 @@ const Header = () => {
                         <Link
                           to="/register"
                           onClick={() => setMobileOpen(false)}
-                          className="flex-1 py-2 text-center text-sm font-medium bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors"
+                          className="flex-1 py-2 text-center text-sm font-medium bg-gradient-to-r from-primary-600 to-pink-600 text-white rounded-full hover:from-primary-700 hover:to-pink-700 transition-all"
                         >
                           Sign Up
                         </Link>
@@ -528,21 +539,21 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Search Overlay */}
+      {/* Premium Search Overlay */}
       <AnimatePresence>
         {searchOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-start justify-center pt-20 sm:pt-28 px-4"
+            className="fixed inset-0 z-50 bg-gradient-to-b from-black/70 via-black/60 to-primary-900/30 backdrop-blur-md flex items-start justify-center pt-20 sm:pt-28 px-4"
             onClick={() => setSearchOpen(false)}
           >
             <motion.div
               initial={{ y: -20, opacity: 0, scale: 0.97 }}
               animate={{ y: 0, opacity: 1, scale: 1 }}
               exit={{ y: -20, opacity: 0, scale: 0.97 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.2, type: "spring", damping: 25 }}
               className="w-full max-w-2xl"
               onClick={(e) => e.stopPropagation()}
             >
@@ -581,7 +592,7 @@ const Header = () => {
 
                   <button
                     type="submit"
-                    className="px-3 sm:px-4 py-1.5 sm:py-2 bg-primary-600 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-primary-700 transition whitespace-nowrap shrink-0"
+                    className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-primary-600 to-pink-600 text-white rounded-lg text-xs sm:text-sm font-medium hover:from-primary-700 hover:to-pink-700 transition-all whitespace-nowrap shrink-0 shadow-soft"
                   >
                     Search
                   </button>
@@ -616,7 +627,7 @@ const Header = () => {
                           className="w-12 h-12 rounded-lg object-cover shrink-0"
                         />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">
+                          <p className="text-sm font-medium truncate text-gray-900 dark:text-gray-100">
                             {p.name}
                           </p>
                           <p className="text-xs text-gray-500">
@@ -645,9 +656,9 @@ const Header = () => {
                 </div>
               )}
 
-              {/* Popular suggestions (shown when no query) */}
+              {/* Popular suggestions */}
               {!searchQuery.trim() && (
-                <div className="bg-white dark:bg-gray-800 rounded-b-2xl shadow-2xl px-5 py-3">
+                <div className="bg-white dark:bg-gray-800 rounded-b-2xl shadow-2xl px-5 py-4">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-xs text-gray-400 font-medium">
                       Popular:
@@ -675,7 +686,7 @@ const Header = () => {
                   </div>
                   <p className="text-center text-gray-400 text-xs mt-3">
                     Press{" "}
-                    <kbd className="bg-gray-100 dark:bg-gray-700 rounded px-1.5 py-0.5 font-mono">
+                    <kbd className="bg-gray-100 dark:bg-gray-700 rounded px-1.5 py-0.5 font-mono text-gray-600 dark:text-gray-300">
                       Esc
                     </kbd>{" "}
                     to close
