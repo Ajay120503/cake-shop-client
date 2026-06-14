@@ -68,18 +68,18 @@ const About = () => {
       <SEO title={`About Us — ${siteName}`} />
 
       {/* Premium Hero Section */}
-      <section className="relative min-h-[50vh] flex items-center bg-white dark:bg-gray-950 overflow-hidden">
+      <section className="relative min-h-[50vh] flex items-center bg-primary-100 dark:bg-gray-950 overflow-hidden">
         {/* Decorative blobs */}
-        <div className="absolute inset-0 overflow-hidden opacity-30 dark:opacity-10">
+        {/* <div className="absolute inset-0 overflow-hidden opacity-30 dark:opacity-10">
           <div className="absolute -top-20 -left-20 w-80 h-80 rounded-full bg-primary-200 blur-3xl" />
           <div className="absolute -bottom-20 -right-20 w-96 h-96 rounded-full bg-pink-200 blur-3xl" />
-        </div>
+        </div> */}
 
         {bannerImageUrl && (
           <img
             src={bannerImageUrl}
             alt={storyTitle}
-            className="absolute inset-0 w-full h-full object-contain opacity-10 dark:opacity-5"
+            className="absolute inset-0 w-full h-full object-contain opacity-70 dark:opacity-50"
           />
         )}
 
@@ -111,7 +111,7 @@ const About = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed"
+              className="text-lg sm:text-xl text-white dark:text-gray-300 max-w-2xl mx-auto leading-relaxed"
             >
               {storySubtitle}
             </motion.p>
