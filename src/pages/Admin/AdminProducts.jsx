@@ -5,7 +5,6 @@ import { productAPI, categoryAPI } from "../../api/endpoints.js";
 import { formatPrice, getPlaceholderImage } from "../../utils/helpers.js";
 import Loader from "../../components/ui/Loader.jsx";
 import Modal from "../../components/ui/Modal.jsx";
-import Badge from "../../components/ui/Badge.jsx";
 import toast from "react-hot-toast";
 
 const AdminProducts = () => {
@@ -38,7 +37,6 @@ const AdminProducts = () => {
   const [files, setFiles] = useState([]);
   const [saving, setSaving] = useState(false);
 
-  // Debounce search input — only query after user stops typing for 300ms
   useEffect(() => {
     if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
     searchTimerRef.current = setTimeout(() => {
@@ -145,13 +143,16 @@ const AdminProducts = () => {
   const products = data?.data || [];
 
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <h1 className="text-3xl font-display font-bold text-gray-900 dark:text-white">
-          Products
-        </h1>
-        <div className="flex gap-2">
-          <div className="relative flex-1 sm:w-64">
+    <div className="space-y-6">
+      <div className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">Products</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Manage your product catalog
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="relative">
             <Search
               size={16}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -160,50 +161,33 @@ const AdminProducts = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search..."
-              className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all"
+              className="admin-select pl-9"
+              style={{ minWidth: "200px" }}
             />
           </div>
-          <button
-            onClick={() => openModal(null)}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold shadow-soft hover:shadow-elegant transition-all duration-200"
-          >
+          <button onClick={() => openModal(null)} className="admin-btn-primary">
             <Plus size={16} /> Add Product
           </button>
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+      <div className="admin-table-wrapper">
+        <div className="admin-table-scroll">
+          <table className="admin-table">
             <thead>
-              <tr className="bg-gradient-to-r from-primary-50 to-pink-50 dark:from-primary-900/20 dark:to-pink-900/20 border-b border-gray-100 dark:border-gray-700">
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Product
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Category
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Price
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Stock
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Actions
-                </th>
+              <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+            <tbody>
               {products.map((p) => (
-                <tr
-                  key={p._id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                >
+                <tr key={p._id}>
                   <td className="p-3">
                     <div className="flex items-center gap-3">
                       <img
@@ -225,34 +209,39 @@ const AdminProducts = () => {
                   <td className="p-3">
                     <span
                       className={
-                        "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium " +
-                        (p.stock < 5
-                          ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                        p.stock < 5
+                          ? "admin-badge-danger"
                           : p.stock < 20
-                          ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                          : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400")
+                          ? "admin-badge-warning"
+                          : "admin-badge-success"
                       }
                     >
                       {p.stock}
                     </span>
                   </td>
                   <td className="p-3">
-                    <Badge variant={p.isAvailable ? "success" : "danger"}>
+                    <span
+                      className={
+                        p.isAvailable
+                          ? "admin-badge-success"
+                          : "admin-badge-danger"
+                      }
+                    >
                       {p.isAvailable ? "Active" : "Inactive"}
-                    </Badge>
+                    </span>
                   </td>
                   <td className="p-3">
                     <div className="flex gap-1.5">
                       <button
                         onClick={() => openModal(p)}
-                        className="p-2 rounded-lg text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                        className="admin-action-edit"
                         title="Edit"
                       >
                         <Edit size={15} />
                       </button>
                       <button
                         onClick={() => handleDelete(p._id)}
-                        className="p-2 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                        className="admin-action-delete"
                         title="Delete"
                       >
                         <Trash2 size={15} />
@@ -263,11 +252,12 @@ const AdminProducts = () => {
               ))}
               {products.length === 0 && (
                 <tr>
-                  <td
-                    colSpan={6}
-                    className="p-12 text-center text-gray-500 dark:text-gray-400"
-                  >
-                    No products found
+                  <td colSpan={6}>
+                    <div className="admin-empty-state">
+                      <p className="admin-empty-state-text">
+                        No products found
+                      </p>
+                    </div>
                   </td>
                 </tr>
               )}
@@ -444,14 +434,14 @@ const AdminProducts = () => {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold shadow-soft hover:shadow-elegant transition-all duration-200"
+              className="admin-btn-primary"
             >
               {saving ? "Saving..." : "Save"}
             </button>
             <button
               type="button"
               onClick={() => setModalOpen(false)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200"
+              className="admin-btn-outline"
             >
               Cancel
             </button>

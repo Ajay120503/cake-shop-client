@@ -7,6 +7,7 @@ import { HelmetProvider } from "react-helmet-async";
 import App from "./App.jsx";
 import "./styles/index.css";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
+import CustomCursor from "../src/components/common/CustomCursor.jsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,6 +25,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <HelmetProvider>
+            <CustomCursor />
             <App />
           </HelmetProvider>
           <Toaster

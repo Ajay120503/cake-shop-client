@@ -68,7 +68,7 @@ const About = () => {
       <SEO title={`About Us — ${siteName}`} />
 
       {/* Premium Hero Section */}
-      <section className="relative min-h-[50vh] flex items-center bg-gradient-to-br from-primary-50 via-cream-50 to-pink-50 dark:from-gray-900 dark:via-gray-900 dark:to-primary-900/20 overflow-hidden">
+      <section className="relative min-h-[50vh] flex items-center bg-white dark:bg-gray-950 overflow-hidden">
         {/* Decorative blobs */}
         <div className="absolute inset-0 overflow-hidden opacity-30 dark:opacity-10">
           <div className="absolute -top-20 -left-20 w-80 h-80 rounded-full bg-primary-200 blur-3xl" />
@@ -79,7 +79,7 @@ const About = () => {
           <img
             src={bannerImageUrl}
             alt={storyTitle}
-            className="absolute inset-0 w-full h-full object-cover opacity-10 dark:opacity-5"
+            className="absolute inset-0 w-full h-full object-contain opacity-10 dark:opacity-5"
           />
         )}
 
@@ -123,7 +123,7 @@ const About = () => {
       <section className="py-20 relative">
         {/* Decorative divider */}
         <div className="absolute top-0 left-0 right-0 flex justify-center">
-          <div className="w-20 h-1 bg-gradient-to-r from-primary-500 to-pink-500 rounded-full" />
+          <div className="w-20 h-1 bg-primary-500 rounded-full" />
         </div>
 
         <div className="container-custom">
@@ -209,13 +209,13 @@ const About = () => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-primary-100 to-cream-100 dark:from-primary-900/30 dark:to-gray-800 flex items-center justify-center text-9xl">
+                  <div className="w-full h-full bg-primary-100 dark:bg-gray-800 flex items-center justify-center text-9xl">
                     🎂
                   </div>
                 )}
               </div>
               {/* Decorative accent */}
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-gradient-to-br from-primary-200 to-pink-200 dark:from-primary-800 dark:to-pink-800 rounded-2xl -z-10" />
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-primary-200 dark:bg-primary-800 rounded-2xl -z-10" />
               <div className="absolute -top-4 -left-4 w-16 h-16 bg-gradient-to-br from-amber-200 to-primary-200 dark:from-amber-800 dark:to-primary-800 rounded-xl -z-10" />
             </motion.div>
           </div>
@@ -223,7 +223,7 @@ const About = () => {
       </section>
 
       {/* Premium Values Section */}
-      <section className="py-20 bg-gradient-to-b from-white to-cream-50 dark:from-gray-900 dark:to-gray-800/50">
+      <section className="py-20 bg-white dark:bg-gray-900">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

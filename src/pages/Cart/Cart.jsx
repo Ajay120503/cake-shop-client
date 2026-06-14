@@ -37,7 +37,7 @@ const Cart = () => {
           </p>
           <Link
             to="/shop"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-full font-semibold shadow-elegant hover:shadow-glow transition-all duration-200"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-semibold shadow-md shadow-primary-500/20 hover:shadow-lg transition-all duration-200"
           >
             Continue Shopping <ArrowRight size={16} />
           </Link>
@@ -72,7 +72,7 @@ const Cart = () => {
   return (
     <div className="container-custom py-8">
       {/* Premium Header */}
-      <div className="relative min-h-[18vh] flex items-center bg-gradient-to-br from-primary-50 via-cream-50 to-pink-50 dark:from-gray-900 dark:via-gray-900 dark:to-primary-900/20 rounded-3xl mb-8 overflow-hidden px-6 sm:px-8">
+      <div className="relative min-h-[18vh] flex items-center bg-white dark:bg-gray-950 rounded-3xl mb-8 overflow-hidden px-6 sm:px-8">
         <div className="absolute inset-0 overflow-hidden opacity-20 dark:opacity-5">
           <div className="absolute -top-10 left-1/3 w-60 h-60 rounded-full bg-primary-200 blur-3xl" />
           <div className="absolute bottom-0 right-10 w-40 h-40 rounded-full bg-pink-200 blur-3xl" />
@@ -225,7 +225,7 @@ const Cart = () => {
               <button
                 onClick={handleApplyCoupon}
                 disabled={applying}
-                className="px-4 py-2 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold shadow-soft hover:shadow-elegant transition-all duration-200 disabled:opacity-50"
+                className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-semibold shadow-md shadow-primary-500/20 hover:shadow-lg hover:shadow-primary-500/30 transition-all duration-200 disabled:opacity-50"
               >
                 {applying ? "..." : "Apply"}
               </button>
@@ -242,7 +242,7 @@ const Cart = () => {
 
           <button
             onClick={handleCheckout}
-            className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-full font-semibold shadow-elegant hover:shadow-glow transition-all duration-200"
+            className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-semibold shadow-md shadow-primary-500/20 hover:shadow-lg transition-all duration-200"
           >
             Proceed to Checkout <ArrowRight size={16} />
           </button>

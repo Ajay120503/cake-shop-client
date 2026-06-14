@@ -114,9 +114,9 @@ const ReviewForm = ({
   }, []);
 
   return (
-    <div className="bg-white">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           {isEditMode ? "Edit Your Review" : "Write a Review"}
           {productName && " for " + productName}
         </h3>
@@ -134,7 +134,7 @@ const ReviewForm = ({
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Rating */}
         <div>
-          <label className="block text-sm font-medium mb-2">
+          <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
             Your Rating *
           </label>
           <div className="flex gap-1">
@@ -163,7 +163,10 @@ const ReviewForm = ({
 
         {/* Title */}
         <div>
-          <label htmlFor="title" className="block text-sm font-medium mb-1">
+          <label
+            htmlFor="title"
+            className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+          >
             Review Title (Optional)
           </label>
           <input
@@ -171,7 +174,7 @@ const ReviewForm = ({
             id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            className="w-full px-4 py-2.5 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all"
             placeholder="Summarize your experience"
             maxLength="100"
           />
@@ -179,7 +182,10 @@ const ReviewForm = ({
 
         {/* Comment */}
         <div>
-          <label htmlFor="comment" className="block text-sm font-medium mb-1">
+          <label
+            htmlFor="comment"
+            className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+          >
             Your Review *
           </label>
           <textarea
@@ -187,17 +193,19 @@ const ReviewForm = ({
             rows="4"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            className="w-full px-4 py-2.5 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all resize-y"
             placeholder="What did you like or dislike? Share your experience..."
             maxLength="1500"
             required
           />
-          <p className="text-xs text-gray-400 mt-1">{comment.length}/1500</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+            {comment.length}/1500
+          </p>
         </div>
 
         {/* Image Upload */}
         <div>
-          <label className="block text-sm font-medium mb-2">
+          <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
             Images (Max 5 total)
           </label>
           <div className="flex flex-wrap gap-3 items-center">
@@ -260,7 +268,7 @@ const ReviewForm = ({
               className="hidden"
             />
           </div>
-          <p className="text-xs text-gray-400 mt-2">
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
             Upload up to 5 images (JPEG, PNG)
           </p>
         </div>

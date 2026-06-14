@@ -47,7 +47,7 @@ const ReviewList = ({ reviews, productId, onHelpfulUpdate }) => {
         >
           <div className="flex justify-between items-start flex-wrap gap-2">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-pink-500 text-white flex items-center justify-center font-bold text-sm">
+              <div className="w-10 h-10 rounded-full bg-primary-500 text-white flex items-center justify-center font-bold text-sm">
                 {review.user?.name?.[0]?.toUpperCase() || "U"}
               </div>
               <div>

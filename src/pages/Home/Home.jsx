@@ -69,7 +69,7 @@ const Home = () => {
               >
                 <Link
                   to={"/shop?category=" + cat._id}
-                  className="block group relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-primary-100 to-cream-100"
+                  className="block group relative aspect-square rounded-2xl overflow-hidden bg-primary-50"
                 >
                   <img
                     src={cat.image?.url || getPlaceholderImage(cat.name)}
@@ -112,7 +112,7 @@ const Home = () => {
         </section>
 
         {/* Why Choose Us */}
-        <section className="py-16 bg-gradient-to-r from-primary-50 to-cream-100 rounded-3xl my-12 px-8">
+        <section className="py-16 rounded-3xl my-12 px-8">
           <div className="text-center mb-10">
             <h2 className="text-3xl sm:text-4xl font-display font-bold mb-3">
               Why Choose Us
@@ -151,7 +151,7 @@ const Home = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="text-center p-6 bg-white rounded-2xl shadow-soft"
+                className="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700"
               >
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center">
                   <f.icon size={28} />

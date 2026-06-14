@@ -149,9 +149,9 @@ const OrderDetail = () => {
               {data.statusHistory?.map((s, i) => (
                 <div key={i} className="flex gap-3">
                   <div className="flex flex-col items-center">
-                    <div className="w-3 h-3 rounded-full bg-gradient-to-r from-primary-500 to-pink-500 shadow-sm" />
+                    <div className="w-3 h-3 rounded-full bg-primary-500 shadow-sm" />
                     {i < data.statusHistory.length - 1 && (
-                      <div className="w-0.5 flex-1 bg-gradient-to-b from-primary-200 to-pink-100 dark:from-primary-700 dark:to-pink-900/30 mt-1" />
+                      <div className="w-0.5 flex-1 bg-primary-200 dark:bg-primary-700 mt-1" />
                     )}
                   </div>
                   <div className="pb-4">

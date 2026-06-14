@@ -22,7 +22,7 @@ const Loader = ({ fullScreen = false, size = "md", className = "" }) => {
         />
         <motion.span
           className="absolute inset-0 flex items-center justify-center text-lg"
-          animate={{ scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] }}
+          animate={{ scale: [1, 1.15, 1] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
           🎂
@@ -33,14 +33,14 @@ const Loader = ({ fullScreen = false, size = "md", className = "" }) => {
         animate={{ opacity: [0.5, 1, 0.5] }}
         transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
       >
-        Loading sweetness...
+        Loading...
       </motion.p>
     </div>
   );
 
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-cream-50/90 via-white/90 to-pink-50/90 backdrop-blur-md dark:from-gray-900/90 dark:via-gray-900/90 dark:to-primary-900/20">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/90 backdrop-blur-md dark:bg-gray-900/90">
         {content}
       </div>
     );

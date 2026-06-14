@@ -1,4 +1,5 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import "../styles/admin.css";
 import { useState } from "react";
 import {
   LayoutDashboard,
@@ -37,7 +38,7 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-cream-50 dark:from-gray-900 dark:to-gray-800 flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -81,7 +82,7 @@ const AdminLayout = () => {
                 className={({ isActive }) =>
                   "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 " +
                   (isActive
-                    ? "bg-gradient-to-r from-primary-600 to-pink-600 text-white shadow-elegant"
+                    ? "bg-primary-600 text-white shadow-soft"
                     : "text-gray-600 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-gray-700 hover:text-primary-600 dark:hover:text-primary-400")
                 }
               >
@@ -94,7 +95,7 @@ const AdminLayout = () => {
           {/* User footer */}
           <div className="p-4 border-t border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3 mb-3 px-1">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-pink-500 text-white flex items-center justify-center font-bold text-sm shadow-elegant shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-primary-500 text-white flex items-center justify-center font-bold text-sm shrink-0">
                 {user?.name?.[0]?.toUpperCase() || "A"}
               </div>
               <div className="flex-1 min-w-0">

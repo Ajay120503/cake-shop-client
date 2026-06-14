@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, Tag, Wand2 } from "lucide-react";
 import { categoryAPI } from "../../api/endpoints.js";
 import Loader from "../../components/ui/Loader.jsx";
 import Modal from "../../components/ui/Modal.jsx";
@@ -19,6 +19,8 @@ const AdminCategories = () => {
     order: 0,
   });
   const [file, setFile] = useState(null);
+  const [filePreview, setFilePreview] = useState(null);
+  const [removingBg, setRemovingBg] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const { data, isLoading } = useQuery({
@@ -47,8 +49,44 @@ const AdminCategories = () => {
       });
     }
     setFile(null);
+    if (filePreview) URL.revokeObjectURL(filePreview);
+    setFilePreview(null);
+    setRemovingBg(false);
     setModalOpen(true);
   };
+
+  const handleFileSelect = (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    setFile(f);
+    if (filePreview) URL.revokeObjectURL(filePreview);
+    setFilePreview(URL.createObjectURL(f));
+  };
+
+  const handleRemoveBackground = useCallback(async () => {
+    if (!file) {
+      toast.error("Please select an image first");
+      return;
+    }
+    setRemovingBg(true);
+    try {
+      const { removeBackground } = await import("@imgly/background-removal");
+      const imageBlob = await removeBackground(file);
+      const processedFile = new File(
+        [imageBlob],
+        file.name.replace(/\.[^.]+$/, ".png"),
+        { type: "image/png" }
+      );
+      setFile(processedFile);
+      if (filePreview) URL.revokeObjectURL(filePreview);
+      setFilePreview(URL.createObjectURL(processedFile));
+      toast.success("Background removed!");
+    } catch (err) {
+      toast.error("Failed to remove background. Try a different image.");
+    } finally {
+      setRemovingBg(false);
+    }
+  }, [file, filePreview]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -86,83 +124,82 @@ const AdminCategories = () => {
   const categories = data || [];
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-display font-bold text-gray-900 dark:text-white">
-          Categories
-        </h1>
-        <button
-          onClick={() => openModal(null)}
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold shadow-soft hover:shadow-elegant transition-all duration-200"
-        >
+    <div className="space-y-6">
+      <div className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">Categories</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Organize your products by categories
+          </p>
+        </div>
+        <button onClick={() => openModal(null)} className="admin-btn-primary">
           <Plus size={16} /> Add Category
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+      <div className="admin-table-wrapper">
+        <div className="admin-table-scroll">
+          <table className="admin-table">
             <thead>
-              <tr className="bg-gradient-to-r from-primary-50 to-pink-50 dark:from-primary-900/20 dark:to-pink-900/20 border-b border-gray-100 dark:border-gray-700">
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Image
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Slug
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Actions
-                </th>
+              <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+            <tbody>
               {categories.map((c) => (
-                <tr
-                  key={c._id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                >
-                  <td className="p-3">
+                <tr key={c._id}>
+                  <td>
                     <img
                       src={c.image?.url || getPlaceholderImage(c.name)}
                       alt=""
-                      className="w-10 h-10 rounded-xl object-cover"
+                      className="w-10 h-10 rounded-xl object-cover ring-1 ring-gray-200 dark:ring-gray-700"
                     />
                   </td>
-                  <td className="p-3 font-semibold text-gray-900 dark:text-white">
-                    {c.name}
+                  <td className="font-semibold text-gray-900 dark:text-white">
+                    <div className="flex items-center gap-2">
+                      {c.name}
+                      {c.isFeatured && (
+                        <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-full">
+                          Featured
+                        </span>
+                      )}
+                    </div>
                   </td>
-                  <td className="p-3 text-gray-500 dark:text-gray-400 text-xs">
+                  <td className="text-gray-500 dark:text-gray-400 text-xs font-mono">
                     {c.slug}
                   </td>
-                  <td className="p-3">
+                  <td>
                     <span
                       className={
-                        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium " +
+                        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium " +
                         (c.isActive
-                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                          : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400")
+                          ? "admin-badge-success"
+                          : "admin-badge-danger")
                       }
                     >
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full ${
+                          c.isActive ? "bg-green-500" : "bg-red-500"
+                        }`}
+                      />
                       {c.isActive ? "Active" : "Inactive"}
                     </span>
                   </td>
-                  <td className="p-3">
+                  <td>
                     <div className="flex gap-1.5">
                       <button
                         onClick={() => openModal(c)}
-                        className="p-2 rounded-lg text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                        className="admin-action-edit"
                       >
                         <Edit size={15} />
                       </button>
                       <button
                         onClick={() => handleDelete(c._id)}
-                        className="p-2 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                        className="admin-action-delete"
                       >
                         <Trash2 size={15} />
                       </button>
@@ -170,6 +207,20 @@ const AdminCategories = () => {
                   </td>
                 </tr>
               ))}
+              {categories.length === 0 && (
+                <tr>
+                  <td colSpan={5}>
+                    <div className="admin-empty-state">
+                      <div className="admin-empty-state-icon">
+                        <Tag size={28} className="text-gray-400" />
+                      </div>
+                      <p className="admin-empty-state-text">
+                        No categories found
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -228,25 +279,56 @@ const AdminCategories = () => {
           </div>
           <div>
             <label className="label">Image</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setFile(e.target.files[0])}
-              className="input"
-            />
+            <div className="flex flex-wrap items-center gap-3">
+              <label className="flex-1 cursor-pointer">
+                <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-3 text-center hover:border-primary-400">
+                  <span className="text-xs text-gray-500">
+                    {file ? file.name : "Click to upload image"}
+                  </span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleFileSelect}
+                />
+              </label>
+              {filePreview && (
+                <div className="flex items-center gap-2">
+                  <img
+                    src={filePreview}
+                    alt="Preview"
+                    className="w-16 h-16 object-cover rounded-xl border border-gray-200 dark:border-gray-700"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemoveBackground}
+                    disabled={removingBg}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 text-white rounded-lg text-xs font-medium transition-all"
+                  >
+                    {removingBg ? (
+                      <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Wand2 size={14} />
+                    )}
+                    {removingBg ? "Processing..." : "Remove BG"}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
           <div className="flex gap-2 pt-1">
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold shadow-soft hover:shadow-elegant transition-all duration-200"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-semibold"
             >
               {saving ? "Saving..." : "Save"}
             </button>
             <button
               type="button"
               onClick={() => setModalOpen(false)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200"
+              className="inline-flex items-center gap-2 px-5 py-2.5 border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white rounded-xl text-sm font-semibold"
             >
               Cancel
             </button>

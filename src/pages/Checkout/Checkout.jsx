@@ -239,7 +239,7 @@ const Checkout = () => {
   return (
     <div className="container-custom py-8">
       {/* Premium Header */}
-      <div className="relative min-h-[18vh] flex items-center bg-gradient-to-br from-primary-50 via-cream-50 to-pink-50 dark:from-gray-900 dark:via-gray-900 dark:to-primary-900/20 rounded-3xl mb-6 overflow-hidden px-6 sm:px-8">
+      <div className="relative min-h-[18vh] flex items-center bg-white dark:bg-gray-950 rounded-3xl mb-6 overflow-hidden px-6 sm:px-8">
         <div className="absolute inset-0 overflow-hidden opacity-20 dark:opacity-5">
           <div className="absolute -top-10 left-1/4 w-60 h-60 rounded-full bg-primary-200 blur-3xl" />
           <div className="absolute bottom-0 right-10 w-40 h-40 rounded-full bg-pink-200 blur-3xl" />
@@ -268,7 +268,7 @@ const Checkout = () => {
                 className={
                   "w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm " +
                   (step >= s.num
-                    ? "bg-gradient-to-r from-primary-600 to-pink-600 text-white shadow-elegant"
+                    ? "bg-primary-600 text-white shadow-md shadow-primary-500/30"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400")
                 }
               >
@@ -393,7 +393,7 @@ const Checkout = () => {
               <button
                 onClick={() => selectedAddress && setStep(2)}
                 disabled={!selectedAddress}
-                className="w-full mt-6 inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl font-semibold shadow-soft hover:shadow-elegant transition-all duration-200 disabled:opacity-50"
+                className="w-full mt-6 inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold shadow-md shadow-primary-500/20 hover:shadow-lg transition-all duration-200 disabled:opacity-50"
               >
                 Continue to Payment
               </button>
@@ -459,7 +459,7 @@ const Checkout = () => {
                 </button>
                 <button
                   onClick={() => setStep(3)}
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl font-semibold shadow-soft hover:shadow-elegant transition-all duration-200"
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold shadow-md shadow-primary-500/20 hover:shadow-lg transition-all duration-200"
                 >
                   Review Order
                 </button>
@@ -487,7 +487,7 @@ const Checkout = () => {
                   </div>
                 ))}
               </div>
-              <div className="bg-gradient-to-br from-primary-50 to-pink-50 dark:from-primary-900/20 dark:to-pink-900/20 p-4 rounded-xl mb-4 text-sm border border-primary-100 dark:border-primary-800">
+              <div className="bg-primary-50 dark:bg-primary-900/20 p-4 rounded-xl mb-4 text-sm border border-primary-100 dark:border-primary-800">
                 <p className="text-gray-800 dark:text-gray-200">
                   <strong>Address:</strong>{" "}
                   {addresses.find((a) => a._id === selectedAddress)?.fullName},{" "}
@@ -511,7 +511,7 @@ const Checkout = () => {
                 <button
                   onClick={placeOrder}
                   disabled={processing}
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl font-semibold shadow-soft hover:shadow-elegant transition-all duration-200 disabled:opacity-50"
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold shadow-md shadow-primary-500/20 hover:shadow-lg transition-all duration-200 disabled:opacity-50"
                 >
                   {processing ? "Processing..." : "Place Order"}
                 </button>
@@ -569,7 +569,7 @@ const Checkout = () => {
                     <button
                       onClick={() => handleApplyCoupon(c.code)}
                       disabled={applyingCoupon === c.code}
-                      className="text-[10px] px-2.5 py-1 bg-gradient-to-r from-primary-600 to-pink-600 text-white rounded-full hover:from-primary-700 hover:to-pink-700 shrink-0 ml-2 transition-all font-semibold"
+                      className="text-[10px] px-2.5 py-1 bg-primary-600 text-white rounded-full hover:from-primary-700 hover:to-pink-700 shrink-0 ml-2 transition-all font-semibold"
                     >
                       {applyingCoupon === c.code ? "..." : "Apply"}
                     </button>

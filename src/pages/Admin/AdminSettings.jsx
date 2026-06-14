@@ -1,10 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Save,
   Plus,
   Trash2,
   GripVertical,
   Image as ImageIcon,
+  Wand2,
+  Users,
+  Package,
 } from "lucide-react";
 import { settingsAPI } from "../../api/endpoints.js";
 import Loader from "../../components/ui/Loader.jsx";
@@ -46,6 +49,7 @@ const AdminSettings = () => {
   const [bannerFiles, setBannerFiles] = useState({});
   const [bannerPreviews, setBannerPreviews] = useState({});
   const [savingBanners, setSavingBanners] = useState(false);
+  const [removingBg, setRemovingBg] = useState({});
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [savingPayments, setSavingPayments] = useState(false);
 
@@ -191,6 +195,37 @@ const AdminSettings = () => {
     }));
   };
 
+  const handleRemoveBackground = useCallback(
+    async (index) => {
+      const file = bannerFiles[index];
+      if (!file) {
+        toast.error("Please upload an image first");
+        return;
+      }
+      setRemovingBg((prev) => ({ ...prev, [index]: true }));
+      try {
+        const { removeBackground } = await import("@imgly/background-removal");
+        const imageBlob = await removeBackground(file);
+        const processedFile = new File(
+          [imageBlob],
+          file.name.replace(/\.[^.]+$/, ".png"),
+          { type: "image/png" }
+        );
+        setBannerFiles((prev) => ({ ...prev, [index]: processedFile }));
+        setBannerPreviews((prev) => {
+          URL.revokeObjectURL(prev[index]);
+          return { ...prev, [index]: URL.createObjectURL(processedFile) };
+        });
+        toast.success("Background removed!");
+      } catch (err) {
+        toast.error("Failed to remove background. Try a different image.");
+      } finally {
+        setRemovingBg((prev) => ({ ...prev, [index]: false }));
+      }
+    },
+    [bannerFiles]
+  );
+
   const handleSaveBanners = async () => {
     setSavingBanners(true);
     try {
@@ -227,29 +262,44 @@ const AdminSettings = () => {
   if (loading) return <Loader />;
 
   return (
-    <div>
-      <h1 className="text-3xl font-display font-bold mb-6 text-gray-900 dark:text-white">
-        Store Settings
-      </h1>
+    <div className="space-y-8">
+      <div className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">Store Settings</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Configure your store preferences and appearance
+          </p>
+        </div>
+      </div>
 
       {/* General Settings */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-soft border border-gray-100 dark:border-gray-700 space-y-3">
-          <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white">
-            General
-          </h2>
-          <input
-            className="input"
-            placeholder="Site Name"
-            value={form.siteName}
-            onChange={(e) => setForm({ ...form, siteName: e.target.value })}
-          />
-          <input
-            className="input"
-            placeholder="Tagline"
-            value={form.tagline}
-            onChange={(e) => setForm({ ...form, tagline: e.target.value })}
-          />
+        <div className="admin-section-card">
+          <div className="flex items-center gap-2 pb-1">
+            <div className="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+              <Save
+                size={16}
+                className="text-primary-600 dark:text-primary-400"
+              />
+            </div>
+            <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white">
+              General
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <input
+              className="input"
+              placeholder="Site Name"
+              value={form.siteName}
+              onChange={(e) => setForm({ ...form, siteName: e.target.value })}
+            />
+            <input
+              className="input"
+              placeholder="Tagline"
+              value={form.tagline}
+              onChange={(e) => setForm({ ...form, tagline: e.target.value })}
+            />
+          </div>
           <textarea
             className="input"
             rows={2}
@@ -268,11 +318,19 @@ const AdminSettings = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-soft border border-gray-100 dark:border-gray-700 space-y-3">
-          <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white">
-            Contact
-          </h2>
-          <div className="grid grid-cols-2 gap-3">
+        <div className="admin-section-card">
+          <div className="flex items-center gap-2 pb-1">
+            <div className="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+              <Users
+                size={16}
+                className="text-primary-600 dark:text-primary-400"
+              />
+            </div>
+            <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white">
+              Contact
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <input
               className="input"
               placeholder="Email"
@@ -313,11 +371,19 @@ const AdminSettings = () => {
           />
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-soft border border-gray-100 dark:border-gray-700 space-y-3">
-          <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white">
-            Shipping & Tax
-          </h2>
-          <div className="grid grid-cols-3 gap-3">
+        <div className="admin-section-card">
+          <div className="flex items-center gap-2 pb-1">
+            <div className="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+              <Package
+                size={16}
+                className="text-primary-600 dark:text-primary-400"
+              />
+            </div>
+            <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white">
+              Shipping & Tax
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="label">Shipping (₹)</label>
               <input
@@ -354,106 +420,131 @@ const AdminSettings = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-soft border border-gray-100 dark:border-gray-700 space-y-3">
-          <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white">
-            Social Links
-          </h2>
-          <input
-            className="input"
-            placeholder="Facebook URL"
-            value={form.facebook}
-            onChange={(e) => setForm({ ...form, facebook: e.target.value })}
-          />
-          <input
-            className="input"
-            placeholder="Instagram URL"
-            value={form.instagram}
-            onChange={(e) => setForm({ ...form, instagram: e.target.value })}
-          />
-          <input
-            className="input"
-            placeholder="Twitter URL"
-            value={form.twitter}
-            onChange={(e) => setForm({ ...form, twitter: e.target.value })}
-          />
-          <input
-            className="input"
-            placeholder="YouTube URL"
-            value={form.youtube}
-            onChange={(e) => setForm({ ...form, youtube: e.target.value })}
-          />
+        <div className="admin-section-card">
+          <div className="flex items-center gap-2 pb-1">
+            <div className="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+              <Users
+                size={16}
+                className="text-primary-600 dark:text-primary-400"
+              />
+            </div>
+            <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white">
+              Social Links
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <input
+              className="input"
+              placeholder="Facebook URL"
+              value={form.facebook}
+              onChange={(e) => setForm({ ...form, facebook: e.target.value })}
+            />
+            <input
+              className="input"
+              placeholder="Instagram URL"
+              value={form.instagram}
+              onChange={(e) => setForm({ ...form, instagram: e.target.value })}
+            />
+            <input
+              className="input"
+              placeholder="Twitter URL"
+              value={form.twitter}
+              onChange={(e) => setForm({ ...form, twitter: e.target.value })}
+            />
+            <input
+              className="input"
+              placeholder="YouTube URL"
+              value={form.youtube}
+              onChange={(e) => setForm({ ...form, youtube: e.target.value })}
+            />
+          </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={saving}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl font-semibold shadow-soft hover:shadow-elegant transition-all duration-200"
-        >
-          <Save size={16} /> {saving ? "Saving..." : "Save Settings"}
-        </button>
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={saving}
+            className="admin-btn-primary px-8 py-3"
+          >
+            <Save size={16} /> {saving ? "Saving..." : "Save Settings"}
+          </button>
+        </div>
       </form>
 
       {/* Hero Banners Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-soft border border-gray-100 dark:border-gray-700 space-y-4 mt-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white">
-              Hero Banners
-            </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-              Manage the carousel banners shown on the home page.
-            </p>
+      <div className="admin-section-card">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+              <ImageIcon
+                size={16}
+                className="text-primary-600 dark:text-primary-400"
+              />
+            </div>
+            <div>
+              <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white">
+                Hero Banners
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Manage the carousel banners shown on the home page.
+              </p>
+            </div>
           </div>
-          <button
-            onClick={addBanner}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold shadow-soft hover:shadow-elegant transition-all duration-200"
-          >
+          <button onClick={addBanner} className="admin-btn-primary shrink-0">
             <Plus size={14} /> Add Banner
           </button>
         </div>
 
         {heroBanners.length === 0 && (
-          <p className="text-gray-400 dark:text-gray-500 text-center py-8">
-            No hero banners yet. Click "Add Banner" to create one.
-          </p>
+          <div className="text-center py-12">
+            <ImageIcon
+              size={40}
+              className="mx-auto text-gray-300 dark:text-gray-600 mb-3"
+            />
+            <p className="text-gray-400 dark:text-gray-500">
+              No hero banners yet. Click "Add Banner" to create one.
+            </p>
+          </div>
         )}
 
         <div className="space-y-4">
           {heroBanners.map((banner, index) => (
             <div
               key={banner._id || index}
-              className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 bg-gray-50 dark:bg-gray-900/50 space-y-3"
+              className="border border-gray-200 dark:border-gray-700/80 rounded-xl p-4 sm:p-5 bg-gray-50/50 dark:bg-gray-900/30 space-y-4 hover:border-primary-200 dark:hover:border-primary-800/50 transition-colors"
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <GripVertical size={16} className="text-gray-400" />
-                  <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                <div className="flex items-center gap-3">
+                  <GripVertical
+                    size={16}
+                    className="text-gray-400 cursor-grab"
+                  />
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-800 px-3 py-1 rounded-lg shadow-sm">
                     Banner {index + 1}
                   </span>
-                  <label className="flex items-center gap-1 text-xs ml-2 cursor-pointer">
+                  <label className="admin-toggle">
                     <input
                       type="checkbox"
                       checked={banner.isActive}
                       onChange={(e) =>
                         updateBanner(index, "isActive", e.target.checked)
                       }
-                      className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                     />
-                    Active
+                    <span className="admin-toggle-track" />
                   </label>
                 </div>
                 <button
                   onClick={() => removeBanner(index)}
-                  className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                  className="admin-action-delete"
                 >
                   <Trash2 size={15} />
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <input
                   className="input"
-                  placeholder="Title (e.g. Handcrafted Cakes)"
+                  placeholder="Title (e.g. Fresh Baked Cakes)"
                   value={banner.title}
                   onChange={(e) => updateBanner(index, "title", e.target.value)}
                 />
@@ -494,9 +585,9 @@ const AdminSettings = () => {
 
               <div>
                 <label className="label">Banner Image</label>
-                <div className="flex items-center gap-4">
-                  <label className="flex-1 cursor-pointer">
-                    <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-3 text-center hover:border-primary-400 transition-colors">
+                <div className="flex flex-wrap items-center gap-4">
+                  <label className="cursor-pointer">
+                    <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-4 text-center hover:border-primary-400 dark:hover:border-primary-500 transition-colors w-48">
                       <ImageIcon
                         size={24}
                         className="mx-auto text-gray-400 mb-1"
@@ -504,7 +595,7 @@ const AdminSettings = () => {
                       <span className="text-xs text-gray-500">
                         {bannerFiles[index]
                           ? bannerFiles[index].name
-                          : "Click to upload image"}
+                          : "Click to upload"}
                       </span>
                     </div>
                     <input
@@ -516,13 +607,30 @@ const AdminSettings = () => {
                       }
                     />
                   </label>
-                  {(bannerPreviews[index] || banner.image?.url) && (
-                    <img
-                      src={bannerPreviews[index] || banner.image?.url}
-                      alt={banner.title || "Banner"}
-                      className="w-24 h-16 object-cover rounded-xl border border-gray-200 dark:border-gray-700"
-                    />
-                  )}
+                  <div className="flex items-center gap-3">
+                    {(bannerPreviews[index] || banner.image?.url) && (
+                      <img
+                        src={bannerPreviews[index] || banner.image?.url}
+                        alt={banner.title || "Banner"}
+                        className="w-24 h-20 object-cover rounded-xl ring-1 ring-gray-200 dark:ring-gray-700"
+                      />
+                    )}
+                    {bannerFiles[index] && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveBackground(index)}
+                        disabled={removingBg[index]}
+                        className="inline-flex items-center gap-1.5 px-3 py-2 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 text-white rounded-lg text-xs font-medium transition-all"
+                      >
+                        {removingBg[index] ? (
+                          <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Wand2 size={14} />
+                        )}
+                        {removingBg[index] ? "Processing..." : "Remove BG"}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -530,51 +638,66 @@ const AdminSettings = () => {
         </div>
 
         {heroBanners.length > 0 && (
-          <button
-            onClick={handleSaveBanners}
-            disabled={savingBanners}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl font-semibold shadow-soft hover:shadow-elegant transition-all duration-200"
-          >
-            <Save size={16} />{" "}
-            {savingBanners ? "Saving Banners..." : "Save Hero Banners"}
-          </button>
+          <div className="flex justify-end pt-2">
+            <button
+              onClick={handleSaveBanners}
+              disabled={savingBanners}
+              className="admin-btn-primary px-8 py-3"
+            >
+              <Save size={16} />{" "}
+              {savingBanners ? "Saving Banners..." : "Save Hero Banners"}
+            </button>
+          </div>
         )}
       </div>
 
       {/* Payment Methods Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-soft border border-gray-100 dark:border-gray-700 space-y-4 mt-6">
-        <div>
-          <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white">
-            Payment Methods
-          </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-            Enable or disable payment methods shown to customers at checkout.
-          </p>
+      <div className="admin-section-card">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+            <Package
+              size={16}
+              className="text-primary-600 dark:text-primary-400"
+            />
+          </div>
+          <div>
+            <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white">
+              Payment Methods
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Enable or disable payment methods shown to customers at checkout.
+            </p>
+          </div>
         </div>
 
         {paymentMethods.length === 0 ? (
-          <p className="text-gray-400 dark:text-gray-500 text-center py-4">
-            No payment methods configured. Loading defaults...
-          </p>
+          <div className="text-center py-8">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gray-100 dark:bg-gray-700/50 flex items-center justify-center">
+              <Package size={20} className="text-gray-400" />
+            </div>
+            <p className="text-gray-400 dark:text-gray-500">
+              No payment methods configured. Loading defaults...
+            </p>
+          </div>
         ) : (
           <div className="space-y-2">
             {paymentMethods.map((method, index) => (
               <div
                 key={method.key}
                 className={
-                  "flex items-center justify-between p-4 rounded-xl border transition-all " +
+                  "flex items-center justify-between p-4 rounded-xl border transition-all duration-200 " +
                   (method.isActive
-                    ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
-                    : "bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-700")
+                    ? "bg-green-50/80 dark:bg-green-900/20 border-green-200 dark:border-green-800/50 shadow-sm"
+                    : "bg-gray-50/50 dark:bg-gray-900/30 border-gray-200 dark:border-gray-700/50")
                 }
               >
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-semibold text-gray-900 dark:text-white">
                       {method.label}
                     </p>
                     {method.isActive ? (
-                      <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                      <span className="admin-badge-success text-[10px] px-2 py-0.5">
                         ACTIVE
                       </span>
                     ) : (
@@ -584,25 +707,24 @@ const AdminSettings = () => {
                     )}
                   </div>
                   {method.description && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       {method.description}
                     </p>
                   )}
                   <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                     Key:{" "}
-                    <code className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded">
+                    <code className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-[10px]">
                       {method.key}
                     </code>
                   </p>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer ml-4">
+                <label className="admin-toggle ml-4 shrink-0">
                   <input
                     type="checkbox"
                     checked={method.isActive}
                     onChange={() => togglePaymentMethod(index)}
-                    className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                  <span className="admin-toggle-track" />
                 </label>
               </div>
             ))}
@@ -610,14 +732,16 @@ const AdminSettings = () => {
         )}
 
         {paymentMethods.length > 0 && (
-          <button
-            onClick={savePaymentMethods}
-            disabled={savingPayments}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl font-semibold shadow-soft hover:shadow-elegant transition-all duration-200"
-          >
-            <Save size={16} />{" "}
-            {savingPayments ? "Saving..." : "Save Payment Methods"}
-          </button>
+          <div className="flex justify-end pt-2">
+            <button
+              onClick={savePaymentMethods}
+              disabled={savingPayments}
+              className="admin-btn-primary px-8 py-3"
+            >
+              <Save size={16} />{" "}
+              {savingPayments ? "Saving..." : "Save Payment Methods"}
+            </button>
+          </div>
         )}
       </div>
     </div>

@@ -67,7 +67,7 @@ const AdminCoupons = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      const data = {
+      const payload = {
         ...form,
         discountValue: Number(form.discountValue),
         minOrderAmount: Number(form.minOrderAmount),
@@ -78,8 +78,8 @@ const AdminCoupons = () => {
         usagePerUser: Number(form.usagePerUser),
         validUntil: new Date(form.validUntil).toISOString(),
       };
-      if (editing) await couponAPI.update(editing._id, data);
-      else await couponAPI.create(data);
+      if (editing) await couponAPI.update(editing._id, payload);
+      else await couponAPI.create(payload);
       toast.success(editing ? "Updated" : "Created");
       queryClient.invalidateQueries(["admin-coupons"]);
       setModalOpen(false);
@@ -105,56 +105,38 @@ const AdminCoupons = () => {
   const coupons = data || [];
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-display font-bold text-gray-900 dark:text-white">
-          Coupons
-        </h1>
-        <button
-          onClick={() => openModal(null)}
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold shadow-soft hover:shadow-elegant transition-all duration-200"
-        >
+    <div className="space-y-6">
+      <div className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">Coupons</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Manage discount coupons
+          </p>
+        </div>
+        <button onClick={() => openModal(null)} className="admin-btn-primary">
           <Plus size={16} /> Add Coupon
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+      {/* Table */}
+      <div className="admin-table-wrapper">
+        <div className="admin-table-scroll">
+          <table className="admin-table">
             <thead>
-              <tr className="bg-gradient-to-r from-primary-50 to-pink-50 dark:from-primary-900/20 dark:to-pink-900/20 border-b border-gray-100 dark:border-gray-700">
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Code
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Discount
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Min Order
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Used/Limit
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Valid Until
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Actions
-                </th>
+              <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Discount</th>
+                <th>Min Order</th>
+                <th>Used/Limit</th>
+                <th>Valid Until</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+            <tbody>
               {coupons.map((c) => (
-                <tr
-                  key={c._id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                >
+                <tr key={c._id}>
                   <td className="p-3 font-mono font-bold text-primary-600 dark:text-primary-400">
                     {c.code}
                   </td>
@@ -178,10 +160,9 @@ const AdminCoupons = () => {
                   <td className="p-3">
                     <span
                       className={
-                        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium " +
-                        (c.isActive
-                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                          : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400")
+                        c.isActive
+                          ? "admin-badge-success"
+                          : "admin-badge-danger"
                       }
                     >
                       {c.isActive ? "Active" : "Inactive"}
@@ -191,13 +172,13 @@ const AdminCoupons = () => {
                     <div className="flex gap-1.5">
                       <button
                         onClick={() => openModal(c)}
-                        className="p-2 rounded-lg text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                        className="admin-action-edit"
                       >
                         <Edit size={15} />
                       </button>
                       <button
                         onClick={() => handleDelete(c._id)}
-                        className="p-2 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                        className="admin-action-delete"
                       >
                         <Trash2 size={15} />
                       </button>
@@ -207,11 +188,10 @@ const AdminCoupons = () => {
               ))}
               {coupons.length === 0 && (
                 <tr>
-                  <td
-                    colSpan={8}
-                    className="p-12 text-center text-gray-500 dark:text-gray-400"
-                  >
-                    No coupons found
+                  <td colSpan={8}>
+                    <div className="admin-empty-state">
+                      <p className="admin-empty-state-text">No coupons found</p>
+                    </div>
                   </td>
                 </tr>
               )}
@@ -220,6 +200,7 @@ const AdminCoupons = () => {
         </div>
       </div>
 
+      {/* Modal */}
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -322,14 +303,14 @@ const AdminCoupons = () => {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold shadow-soft hover:shadow-elegant transition-all duration-200"
+              className="admin-btn-primary"
             >
               {saving ? "Saving..." : "Save"}
             </button>
             <button
               type="button"
               onClick={() => setModalOpen(false)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200"
+              className="admin-btn-outline"
             >
               Cancel
             </button>

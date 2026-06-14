@@ -42,7 +42,7 @@ const OrderSuccess = () => {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             to={"/account/orders/" + id}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-full font-semibold shadow-elegant hover:shadow-glow transition-all duration-200"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-semibold shadow-md shadow-primary-500/20 hover:shadow-lg transition-all duration-200"
           >
             Track Order <ArrowRight size={16} />
           </Link>

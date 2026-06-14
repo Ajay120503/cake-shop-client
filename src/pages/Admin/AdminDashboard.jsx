@@ -53,26 +53,22 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <div>
-      <h1 className="text-3xl font-display font-bold mb-6 text-gray-900 dark:text-white">
-        Dashboard
-      </h1>
+    <div className="space-y-8">
+      <div className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">Dashboard</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Overview of your store performance
+          </p>
+        </div>
+      </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+      <div className="admin-card-grid">
         {cards.map((c, i) => (
-          <div
-            key={i}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-soft hover:shadow-elegant transition-all duration-200 border border-gray-100 dark:border-gray-700"
-          >
+          <div key={i} className="admin-stat-card">
             <div className="flex items-start justify-between mb-3">
-              <div
-                className={
-                  "w-12 h-12 rounded-xl bg-gradient-to-br " +
-                  c.color +
-                  " text-white flex items-center justify-center shadow-sm"
-                }
-              >
+              <div className={"admin-stat-icon bg-gradient-to-br " + c.color}>
                 <c.icon size={22} />
               </div>
               <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-600 bg-green-50 dark:bg-green-900/30 dark:text-green-400 px-2 py-0.5 rounded-full">
@@ -90,9 +86,9 @@ const AdminDashboard = () => {
       </div>
 
       {/* Stats Grid + Low Stock */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-soft border border-gray-100 dark:border-gray-700 lg:col-span-2">
-          <h2 className="font-display font-semibold text-lg mb-4 text-gray-900 dark:text-white">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="admin-section-card lg:col-span-2">
+          <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white">
             Overview
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -107,7 +103,7 @@ const AdminDashboard = () => {
             ].map((item, i) => (
               <div
                 key={i}
-                className="p-4 rounded-xl bg-gradient-to-br from-primary-50 to-pink-50 dark:from-primary-900/20 dark:to-pink-900/20 border border-primary-100 dark:border-primary-800"
+                className="p-4 rounded-xl bg-primary-50/50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800"
               >
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                   {item.label}
@@ -120,8 +116,8 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-soft border border-gray-100 dark:border-gray-700">
-          <h2 className="font-display font-semibold text-lg mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+        <div className="admin-section-card">
+          <h2 className="font-display font-semibold text-lg text-gray-900 dark:text-white flex items-center gap-2">
             <AlertCircle size={18} className="text-amber-500" />
             Low Stock
           </h2>
@@ -153,11 +149,11 @@ const AdminDashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <Link
           to="/admin/orders"
-          className="group bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-soft hover:shadow-elegant border border-gray-100 dark:border-gray-700 transition-all duration-200"
+          className="admin-card p-6 hover:shadow-md transition-all duration-200"
         >
           <div className="flex items-center justify-between">
             <div>
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-100 to-pink-100 dark:from-primary-900/30 dark:to-pink-900/30 flex items-center justify-center mb-3">
+              <div className="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mb-3">
                 <ShoppingBag
                   size={20}
                   className="text-primary-600 dark:text-primary-400"
@@ -179,11 +175,11 @@ const AdminDashboard = () => {
 
         <Link
           to="/admin/products"
-          className="group bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-soft hover:shadow-elegant border border-gray-100 dark:border-gray-700 transition-all duration-200"
+          className="admin-card p-6 hover:shadow-md transition-all duration-200"
         >
           <div className="flex items-center justify-between">
             <div>
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-100 to-pink-100 dark:from-primary-900/30 dark:to-pink-900/30 flex items-center justify-center mb-3">
+              <div className="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mb-3">
                 <Package
                   size={20}
                   className="text-primary-600 dark:text-primary-400"

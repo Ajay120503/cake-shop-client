@@ -57,18 +57,21 @@ const AdminOrders = () => {
   };
 
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <h1 className="text-3xl font-display font-bold text-gray-900 dark:text-white">
-          Orders
-        </h1>
+    <div className="space-y-6">
+      <div className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">Orders</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Manage customer orders
+          </p>
+        </div>
         <select
           value={filter}
           onChange={(e) => {
             setFilter(e.target.value);
             setPage(1);
           }}
-          className="w-full sm:w-auto px-4 py-2.5 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-gray-100 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all"
+          className="admin-select"
         >
           <option value="">All Statuses</option>
           {STATUSES.map((s) => (
@@ -80,43 +83,24 @@ const AdminOrders = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-700 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+      <div className="admin-table-wrapper">
+        <div className="admin-table-scroll">
+          <table className="admin-table">
             <thead>
-              <tr className="bg-gradient-to-r from-primary-50 to-pink-50 dark:from-primary-900/20 dark:to-pink-900/20 border-b border-gray-100 dark:border-gray-700">
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Order
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Customer
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Items
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Total
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Payment
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  Action
-                </th>
+              <tr>
+                <th>Order</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Payment</th>
+                <th>Date</th>
+                <th>Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+            <tbody>
               {orders.map((o) => (
-                <tr
-                  key={o._id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                >
+                <tr key={o._id}>
                   <td className="p-3">
                     <span className="font-mono text-xs font-bold text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-lg">
                       #{o.orderNumber}
@@ -163,11 +147,10 @@ const AdminOrders = () => {
               ))}
               {orders.length === 0 && (
                 <tr>
-                  <td
-                    colSpan={8}
-                    className="p-12 text-center text-gray-500 dark:text-gray-400"
-                  >
-                    No orders found
+                  <td colSpan={8}>
+                    <div className="admin-empty-state">
+                      <p className="admin-empty-state-text">No orders found</p>
+                    </div>
                   </td>
                 </tr>
               )}
@@ -178,16 +161,15 @@ const AdminOrders = () => {
 
       {/* Pagination */}
       {pagination.pages > 1 && (
-        <div className="flex justify-center gap-2 mt-6">
+        <div className="admin-pagination">
           {Array.from({ length: pagination.pages }, (_, i) => (
             <button
               key={i}
               onClick={() => setPage(i + 1)}
               className={
-                "w-10 h-10 rounded-xl text-sm font-semibold transition-all duration-150 " +
-                (page === i + 1
-                  ? "bg-gradient-to-r from-primary-600 to-pink-600 text-white shadow-elegant"
-                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-primary-50 dark:hover:bg-gray-700")
+                page === i + 1
+                  ? "admin-pagination-active"
+                  : "admin-pagination-btn"
               }
             >
               {i + 1}
@@ -205,7 +187,7 @@ const AdminOrders = () => {
       >
         {modalOrder && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 p-4 rounded-xl bg-gradient-to-br from-primary-50 to-pink-50 dark:from-primary-900/20 dark:to-pink-900/20">
+            <div className="grid grid-cols-2 gap-4 p-4 rounded-xl bg-primary-50 dark:bg-primary-900/20">
               <div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">
                   Customer
@@ -269,15 +251,12 @@ const AdminOrders = () => {
               />
             </div>
             <div className="flex gap-2 pt-1">
-              <button
-                onClick={handleStatus}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold shadow-soft hover:shadow-elegant transition-all duration-200"
-              >
+              <button onClick={handleStatus} className="admin-btn-primary">
                 Update Status
               </button>
               <button
                 onClick={() => setModalOrder(null)}
-                className="inline-flex items-center gap-2 px-5 py-2.5 border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200"
+                className="admin-btn-outline"
               >
                 Cancel
               </button>

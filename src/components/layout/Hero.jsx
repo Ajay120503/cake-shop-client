@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   motion,
@@ -17,9 +17,17 @@ import {
 } from "lucide-react";
 import { useSettings } from "../../store/settingsStore.js";
 import { getPlaceholderImage } from "../../utils/helpers.js";
+import { useTheme } from "../../context/ThemeContext.jsx";
 
 const Hero = () => {
+  const heroRef = useRef(null);
+  const layerBgRef = useRef(null);
+  const layerMidRef = useRef(null);
+  const layerFgRef = useRef(null);
+
   const { settings } = useSettings();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const banners = settings?.heroBanners?.filter((b) => b.isActive) || [];
   const [current, setCurrent] = useState(0);
 
@@ -36,6 +44,54 @@ const Hero = () => {
     return () => clearInterval(timer);
   }, [banners.length]);
 
+  // ── Synced parallax: all three layers now move together as one unit ──
+  useEffect(() => {
+    let tgt = { x: 0, y: 0 };
+    let cur = { x: 0, y: 0 };
+    let raf;
+
+    const onMove = (e) => {
+      const r = heroRef.current?.getBoundingClientRect();
+      if (!r) return;
+      const mx = (e.clientX - r.left) / r.width - 0.5;
+      const my = (e.clientY - r.top) / r.height - 0.5;
+      tgt = { x: mx * -28, y: my * -20 };
+    };
+
+    const onLeave = () => {
+      tgt = { x: 0, y: 0 };
+    };
+
+    const lerp = (a, b, t) => ({
+      x: a.x + (b.x - a.x) * t,
+      y: a.y + (b.y - a.y) * t,
+    });
+
+    const loop = () => {
+      cur = lerp(cur, tgt, 0.07);
+      const transform = `translate(${cur.x.toFixed(2)}px, ${cur.y.toFixed(
+        2
+      )}px) scale(1.12)`;
+
+      if (layerBgRef.current) layerBgRef.current.style.transform = transform;
+      if (layerMidRef.current) layerMidRef.current.style.transform = transform;
+      if (layerFgRef.current) layerFgRef.current.style.transform = transform;
+
+      raf = requestAnimationFrame(loop);
+    };
+
+    const el = heroRef.current;
+    el?.addEventListener("mousemove", onMove);
+    el?.addEventListener("mouseleave", onLeave);
+    raf = requestAnimationFrame(loop);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      el?.removeEventListener("mousemove", onMove);
+      el?.removeEventListener("mouseleave", onLeave);
+    };
+  }, []);
+
   const features = [
     { icon: Truck, title: "Free Delivery", desc: "On ₹500+" },
     { icon: Award, title: "Premium Quality", desc: "Chef crafted" },
@@ -43,36 +99,33 @@ const Hero = () => {
     { icon: Heart, title: "Fresh Baked", desc: "No preservatives" },
   ];
 
+  // No banners fallback — light/dark aware
   if (banners.length === 0) {
     return (
-      <section className="relative h-[85vh] flex items-center bg-gradient-to-br from-pink-50 via-cream-50 to-yellow-50 overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-40 h-40 rounded-full bg-primary-300 blur-3xl" />
-          <div className="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-pink-300 blur-3xl" />
-        </div>
-        <div className="container-custom text-center relative z-10">
+      <section className="relative min-h-[70vh] sm:min-h-[82vh] flex items-center overflow-hidden bg-primary-50 dark:bg-gray-950">
+        <div className="container-custom relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
+            className="max-w-3xl"
           >
-            <motion.span
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-100 text-primary-700 text-xs font-semibold mb-4"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              Premium Bakery Since 2010
-            </motion.span>
-            <h1 className="text-6xl md:text-7xl lg:text-8xl font-display font-bold gradient-text mb-4">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-bold mb-5 leading-tight text-gray-900 dark:text-white">
               Handcrafted
               <br />
-              <span className="text-gray-900 dark:text-white">Cakes</span>
+              <span className="text-primary-600 dark:text-primary-400">
+                Cakes
+              </span>
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
+            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-xl leading-8">
               Every slice tells a story of passion, quality, and love.
             </p>
+            <Link
+              to="/shop"
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-gray-900 dark:bg-white px-7 py-3 text-sm font-semibold text-white dark:text-gray-900 hover:bg-primary-700 dark:hover:bg-primary-100 transition-all duration-200"
+            >
+              Shop Collection <ArrowRight size={16} />
+            </Link>
           </motion.div>
         </div>
       </section>
@@ -82,7 +135,10 @@ const Hero = () => {
   return (
     <>
       {/* ── Premium Slider ── */}
-      <section className="relative h-[85vh] sm:h-[90vh] overflow-hidden bg-black">
+      <section
+        ref={heroRef}
+        className="relative min-h-[70vh] sm:min-h-[88vh] overflow-hidden bg-white dark:bg-gray-950"
+      >
         {/* Background Slider */}
         <AnimatePresence mode="wait">
           {banners.map(
@@ -91,21 +147,63 @@ const Hero = () => {
                 <motion.div
                   key={idx}
                   className="absolute inset-0 overflow-hidden"
-                  style={{ x, y, rotateX, rotateY }}
                   initial={{ opacity: 0, scale: 1.05 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 1.05 }}
                   transition={{ duration: 1.2, ease: "easeInOut" }}
                 >
-                  <img
-                    src={banner.image?.url || getPlaceholderImage(banner.title)}
-                    alt={banner.title}
-                    className="w-full h-full object-cover object-[center_30%]"
-                  />
-                  {/* Premium gradient overlays */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.1),transparent_50%)]" />
+                  {/* Layer 1 — Background: blurred */}
+                  <div
+                    ref={layerBgRef}
+                    className="absolute inset-16 will-change-transform"
+                    style={{
+                      filter: "blur(6px) brightness(0.4) saturate(0.8)",
+                    }}
+                  >
+                    <img
+                      src={
+                        banner.image?.url || getPlaceholderImage(banner.title)
+                      }
+                      alt=""
+                      className="w-full h-full object-contain object-center"
+                    />
+                  </div>
+
+                  {/* Layer 2 — Midground: slight desaturate */}
+                  <div
+                    ref={layerMidRef}
+                    className="absolute inset-16 will-change-transform"
+                    style={{
+                      opacity: 0.5,
+                      mixBlendMode: "soft-light",
+                    }}
+                  >
+                    <img
+                      src={
+                        banner.image?.url || getPlaceholderImage(banner.title)
+                      }
+                      alt=""
+                      className="w-full h-full object-contain object-center"
+                    />
+                  </div>
+
+                  {/* Layer 3 — Foreground: sharp, the main subject */}
+                  <div
+                    ref={layerFgRef}
+                    className="absolute inset-16 will-change-transform"
+                    style={{
+                      filter:
+                        "drop-shadow(-40px 20px 60px rgba(0,0,0,0.5)) drop-shadow(40px 20px 60px rgba(0,0,0,0.5)) brightness(1.05) contrast(1.05)",
+                    }}
+                  >
+                    <img
+                      src={
+                        banner.image?.url || getPlaceholderImage(banner.title)
+                      }
+                      alt={banner.title}
+                      className="w-full h-full object-contain object-center"
+                    />
+                  </div>
                 </motion.div>
               )
           )}
@@ -113,7 +211,7 @@ const Hero = () => {
 
         {/* Content */}
         <div className="absolute inset-0 flex items-center">
-          <div className="container-custom text-white">
+          <div className="container-custom">
             <motion.div
               key={current + "-content"}
               initial={{ opacity: 0, y: 40 }}
@@ -121,21 +219,16 @@ const Hero = () => {
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="max-w-2xl"
             >
-              {/* Category badge */}
-              <motion.span
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm text-white/90 text-xs font-semibold mb-4 border border-white/10"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-              >
-                Featured Collection
-              </motion.span>
-
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
-                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-bold leading-tight"
+                className="text-6xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-bold leading-tight max-w-3xl
+          text-white dark:text-white"
+                style={{
+                  textShadow:
+                    "0 2px 24px rgba(0,0,0,0.45), 0 1px 4px rgba(0,0,0,0.5)",
+                }}
               >
                 {banners[current]?.title}
               </motion.h1>
@@ -145,7 +238,13 @@ const Hero = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.25 }}
-                  className="text-lg sm:text-xl text-white/80 mt-4 max-w-lg"
+                  className="inline-flex items-center mt-3 max-w-md text-xs sm:text-sm md:text-base font-medium tracking-wide
+      px-4 py-1.5 rounded-full
+      text-gray-900 dark:text-white
+      bg-white/80 dark:bg-white/10
+      backdrop-blur-md
+      border border-black/10 dark:border-white/20
+      shadow-lg shadow-black/10 dark:shadow-black/20"
                 >
                   {banners[current]?.subtitle}
                 </motion.p>
@@ -156,7 +255,7 @@ const Hero = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.35 }}
-                  className="text-sm sm:text-base text-white/50 mt-3 max-w-md leading-relaxed"
+                  className="text-sm sm:text-base text-white/80 mt-3 max-w-md leading-relaxed"
                 >
                   {banners[current]?.description}
                 </motion.p>
@@ -171,7 +270,8 @@ const Hero = () => {
                 >
                   <Link
                     to={banners[current]?.ctaLink || "/shop"}
-                    className="inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-white to-cream-100 text-gray-900 rounded-full font-semibold hover:scale-105 hover:shadow-glow transition-all duration-300 group"
+                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold transition-all duration-300 group
+              bg-primary-700 text-white"
                   >
                     <span>{banners[current]?.ctaText}</span>
                     <ArrowRight
@@ -192,28 +292,34 @@ const Hero = () => {
               onClick={() =>
                 setCurrent((c) => (c - 1 + banners.length) % banners.length)
               }
-              className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/25 transition-all border border-white/10 text-white flex items-center justify-center"
+              className="hidden sm:flex absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full 
+        bg-black/20 hover:bg-black/40 border border-black/20 text-gray-900
+        dark:bg-white/10 dark:hover:bg-white/25 dark:border-white/10 dark:text-white
+        backdrop-blur-md transition-all items-center justify-center"
             >
               <ChevronLeft size={20} />
             </button>
 
             <button
               onClick={() => setCurrent((c) => (c + 1) % banners.length)}
-              className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/25 transition-all border border-white/10 text-white flex items-center justify-center"
+              className="hidden sm:flex absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full 
+        bg-black/20 hover:bg-black/40 border border-black/20 text-gray-900
+        dark:bg-white/10 dark:hover:bg-white/25 dark:border-white/10 dark:text-white
+        backdrop-blur-md transition-all items-center justify-center"
             >
               <ChevronRight size={20} />
             </button>
 
             {/* Premium Dots */}
-            <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex gap-2.5 z-10">
+            <div className="absolute hidden sm:flex bottom-24 left-1/2 -translate-x-1/2 gap-2.5 z-10">
               {banners.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrent(i)}
                   className={`transition-all duration-300 rounded-full ${
                     i === current
-                      ? "w-10 h-2.5 bg-gradient-to-r from-primary-400 to-pink-400 shadow-glow"
-                      : "w-2.5 h-2.5 bg-white/30 hover:bg-white/60"
+                      ? "w-10 h-2.5 bg-primary-500 dark:bg-primary-400"
+                      : "w-2.5 h-2.5 bg-black/25 hover:bg-black/50 dark:bg-white/30 dark:hover:bg-white/60"
                   }`}
                 />
               ))}
@@ -223,13 +329,13 @@ const Hero = () => {
       </section>
 
       {/* ── Premium Feature Strip ── */}
-      <div className="relative z-20 -mt-12 px-4">
+      <div className="relative z-20 -mt-10 sm:-mt-12 px-3 sm:px-4">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="grid grid-cols-2 md:grid-cols-4 bg-white dark:bg-gray-900 rounded-2xl shadow-elegant px-4 sm:px-6 py-5 border border-gray-100 dark:border-gray-800"
+            className="grid grid-cols-2 md:grid-cols-4 bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl px-2 sm:px-6 py-3 sm:py-4 border border-gray-200 dark:border-gray-800"
           >
             {features.map((f, i) => (
               <motion.div
@@ -238,16 +344,16 @@ const Hero = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
                 viewport={{ once: true }}
-                className="flex items-center gap-3 py-3 px-2 border-r last:border-r-0 border-gray-100 dark:border-gray-800"
+                className="flex items-center gap-2 sm:gap-3 py-2 sm:py-3 px-1 sm:px-2 md:border-r md:last:border-r-0 border-gray-200 dark:border-gray-800"
               >
-                <div className="w-12 h-12 shrink-0 rounded-xl bg-gradient-to-br from-primary-50 to-pink-50 dark:from-primary-900/30 dark:to-pink-900/20 text-primary-600 dark:text-primary-400 flex items-center justify-center">
-                  <f.icon size={20} />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-xl bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 flex items-center justify-center">
+                  <f.icon size={16} className="sm:w-5 sm:h-5" />
                 </div>
-                <div>
-                  <p className="font-semibold text-sm text-gray-900 dark:text-white">
+                <div className="min-w-0">
+                  <p className="font-semibold text-xs sm:text-sm text-gray-900 dark:text-white">
                     {f.title}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
                     {f.desc}
                   </p>
                 </div>
