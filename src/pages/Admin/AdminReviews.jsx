@@ -5,7 +5,6 @@ import { reviewAPI } from "../../api/endpoints.js";
 import { formatDate } from "../../utils/helpers.js";
 import Loader from "../../components/ui/Loader.jsx";
 import Rating from "../../components/ui/Rating.jsx";
-import Badge from "../../components/ui/Badge.jsx";
 import toast from "react-hot-toast";
 
 const AdminReviews = () => {
@@ -41,15 +40,18 @@ const AdminReviews = () => {
   const reviews = data?.data || [];
 
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <h1 className="text-3xl font-display font-bold text-gray-900 dark:text-white">
-          Reviews
-        </h1>
+    <div className="space-y-6">
+      <div className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">Reviews</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Moderate customer reviews
+          </p>
+        </div>
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="w-full sm:w-auto px-4 py-2.5 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-gray-100 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all"
+          className="admin-select"
         >
           <option value="">All</option>
           <option value="false">Pending</option>
@@ -59,15 +61,14 @@ const AdminReviews = () => {
 
       <div className="space-y-3">
         {reviews.length === 0 ? (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-12 text-center text-gray-500 dark:text-gray-400 shadow-soft border border-gray-100 dark:border-gray-700">
-            No reviews yet
+          <div className="admin-card p-12 text-center">
+            <div className="admin-empty-state">
+              <p className="admin-empty-state-text">No reviews found</p>
+            </div>
           </div>
         ) : (
           reviews.map((r) => (
-            <div
-              key={r._id}
-              className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-5 shadow-soft border border-gray-100 dark:border-gray-700 hover:shadow-elegant transition-all duration-200"
-            >
+            <div key={r._id} className="admin-card p-4 sm:p-5">
               <div className="flex flex-col sm:flex-row gap-4">
                 <img
                   src={r.product?.images?.[0]?.url || "https://placehold.co/80"}
@@ -83,9 +84,15 @@ const AdminReviews = () => {
                     <span className="text-xs text-gray-500 dark:text-gray-400">
                       {formatDate(r.createdAt)}
                     </span>
-                    <Badge variant={r.isApproved ? "success" : "warning"}>
+                    <span
+                      className={
+                        r.isApproved
+                          ? "admin-badge-success"
+                          : "admin-badge-warning"
+                      }
+                    >
                       {r.isApproved ? "Approved" : "Pending"}
-                    </Badge>
+                    </span>
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     on{" "}
@@ -113,7 +120,7 @@ const AdminReviews = () => {
                   )}
                   <button
                     onClick={() => handleDelete(r._id)}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 border-2 border-red-400 text-red-500 hover:bg-red-500 hover:text-white rounded-xl text-xs font-semibold transition-all duration-200"
+                    className="admin-action-delete"
                   >
                     <Trash2 size={14} /> Delete
                   </button>
