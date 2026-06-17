@@ -11,11 +11,11 @@ const Wishlist = () => {
   return (
     <div className="container-custom py-8">
       {/* Premium Header */}
-      <div className="relative min-h-[18vh] flex items-center bg-white dark:bg-gray-950 rounded-3xl mb-8 overflow-hidden px-6 sm:px-8">
-        <div className="absolute inset-0 overflow-hidden opacity-20 dark:opacity-5">
+      <div className="relative min-h-[18vh] flex items-center  rounded-3xl mb-8 overflow-hidden px-6 sm:px-8">
+        {/* <div className="absolute inset-0 overflow-hidden opacity-20 dark:opacity-5">
           <div className="absolute -top-10 left-1/4 w-40 h-40 rounded-full bg-primary-200 blur-3xl" />
           <div className="absolute bottom-0 right-10 w-40 h-40 rounded-full bg-pink-200 blur-3xl" />
-        </div>
+        </div> */}
         <div className="relative z-10 py-8">
           <h1 className="text-3xl sm:text-4xl font-display font-bold gradient-text mb-2">
             My Wishlist

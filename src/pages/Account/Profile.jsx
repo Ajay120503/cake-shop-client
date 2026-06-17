@@ -29,7 +29,7 @@ const Profile = () => {
   return (
     <div className="container-custom py-8 max-w-3xl">
       {/* Premium Header */}
-      <div className="relative min-h-[18vh] flex items-center  rounded-3xl mb-8 overflow-hidden px-6 sm:px-8">
+      <div className="relative min-h-[18vh] flex items-center rounded-3xl mb-8 overflow-hidden px-6 sm:px-8">
         {/* <div className="absolute inset-0 overflow-hidden opacity-20 dark:opacity-5">
           <div className="absolute -top-10 left-1/4 w-40 h-40 rounded-full bg-primary-200 blur-3xl" />
           <div className="absolute bottom-0 right-10 w-40 h-40 rounded-full bg-pink-200 blur-3xl" />

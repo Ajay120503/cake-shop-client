@@ -24,7 +24,7 @@ const Cart = () => {
   if (!cart || !cart.items || cart.items.length === 0) {
     return (
       <div className="container-custom py-20 text-center">
-        <div className="bg-white dark:bg-gray-800 rounded-3xl p-12 max-w-md mx-auto shadow-soft border border-gray-100 dark:border-gray-700">
+        <div className="rounded-3xl p-12 max-w-md mx-auto shadow-soft border border-gray-100 dark:border-gray-700">
           <ShoppingBag
             size={64}
             className="mx-auto text-gray-300 dark:text-gray-600 mb-4"
@@ -72,11 +72,11 @@ const Cart = () => {
   return (
     <div className="container-custom py-8">
       {/* Premium Header */}
-      <div className="relative min-h-[18vh] flex items-center bg-white dark:bg-gray-950 rounded-3xl mb-8 overflow-hidden px-6 sm:px-8">
-        <div className="absolute inset-0 overflow-hidden opacity-20 dark:opacity-5">
+      <div className="relative min-h-[18vh] flex items-center rounded-3xl mb-8 overflow-hidden px-6 sm:px-8">
+        {/* <div className="absolute inset-0 overflow-hidden opacity-20 dark:opacity-5">
           <div className="absolute -top-10 left-1/3 w-60 h-60 rounded-full bg-primary-200 blur-3xl" />
           <div className="absolute bottom-0 right-10 w-40 h-40 rounded-full bg-pink-200 blur-3xl" />
-        </div>
+        </div> */}
         <div className="relative z-10 py-8">
           <h1 className="text-3xl sm:text-4xl font-display font-bold gradient-text mb-2">
             Shopping Cart
